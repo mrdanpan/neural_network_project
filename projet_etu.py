@@ -1,6 +1,5 @@
 import numpy as np
 
-
 class Loss(object):
     def forward(self, y, yhat):
         pass
@@ -16,7 +15,7 @@ class Module(object):
 
     def zero_grad(self):
         ## Annule gradient
-        pass
+        self._gradient = np.zeros(self._parameters.shape)
 
     def forward(self, X):
         ## Calcule la passe forward
