@@ -1,5 +1,34 @@
+import numpy as np
 from projet_etu import Loss
 
 class MSELoss(Loss):
-    pass
+    def forward(self, y, yhat):
+        """Returns the Mean Standard Error Loss between the targets (y) and the predictions (yhat)
+        MSE = || y - yhat || ** 2 
 
+        Args:
+            y (numpy array): targets of shape (batchsize, d)
+            yhat (numpy array): predictions of model of shape (batchsize, d)
+
+        Returns:
+            loss: mean squared error of predictions vs targets, of shape (batchsize,)
+        """        
+        # Assertions
+        self.assert_type_and_shape(y, yhat)
+        # Compute loss along second axis (one loss per example)
+        return np.linalg.norm(y-yhat, axis=1) ** 2 
+
+    def backward(self, y, yhat):
+        """Calculates the gradient of MSE loss in terms of yhat
+        dMSE/dyhat = -2 * ||y - yhat||
+
+        Args:
+            y (numpy array): targets of shape (batchsize, d)
+            yhat (numpy array): predictions of model of shape (batchsize, d)
+        """
+        # Assertions
+        self.assert_type_and_shape(y, yhat)
+        # Compute gradient
+        grad = -2 * np.linalg.norm(y-yhat, axis=1)
+        return grad 
+    
