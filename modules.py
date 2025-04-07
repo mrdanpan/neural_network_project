@@ -8,25 +8,36 @@ class Linear(Module):
         self._parameters = np.random.rand(_input, _output)
 
     def forward(self, X):
-        assert X.shape[1] == self._input, f"Shape mismatch between: input ({X.shape[1]}) and number of neurons in module ({self._input})"
+        if len(X.shape) == 1:
+            X = X.reshape(1, -1) # treat as batch array with only one batch
+        assert X.shape[1] == self._input, f"Shape mismatch between: input ({X.shape[1]}) and module input size ({self._input})"
 
         # out = matrix multiplication with parameters
         return X @ self._parameters
 
-    def backward_update_gradient(self, input, delta):
-        ## Met a jour la valeur du gradient
-        self._gradient = self.backward_delta(input, delta)
-        pass
+    def backward_update_gradient(self, inp, delta):
+        
+        # check input shape
+        if len(inp.shape) == 1:
+            inp = inp.reshape(1, -1) # treat as batch array with only one batch
+        assert inp.shape[1] == self._input
 
-    def backward_delta(self, input, delta):
+        # check delta shape
+        if len(delta.shape) == 1:
+            delta = delta.reshape(1, -1)
+        assert delta.shape[1] == self._output
+
+        # accumulate gradient: loop over batch
+        for b in inp:
+            self._gradient += b.reshape(-1, 1) @ delta
+
+    def backward_delta(self, inp, delta):
         ## Calcul la derivee de l'erreur
-        """Calculates the cost gradient in function of the input (z) and the deltas of the 
-        previous layers (delta). 
-        grad = delta * dz_h/dw_h = delta * W  
 
-        Args:
-            input (np array): input to module, of shape (batchsize, d,)
-            delta (np array): deltas of the following layers, of shape (batchsize, d,)
-        """
-        grad = delta @ self._parameters
-        return grad 
+        # check delta shape
+        if len(delta.shape) == 1:
+            delta = delta.reshape(1, -1)
+        assert delta.shape[1] == self._output
+        
+        # in the linear case: deltas don't depend on input
+        return delta @ self._parameters
