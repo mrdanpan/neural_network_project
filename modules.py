@@ -2,9 +2,10 @@ from projet_etu import Module
 import numpy as np
 
 class Linear(Module):
-    def __init__(self, _input, _output):
+    def __init__(self, _input, _output, seed = None):
         self._input = _input
         self._output = _output
+        if seed is not None: np.random.seed(seed)
         self._parameters = np.random.rand(_input, _output)
 
     def zero_grad(self):
@@ -28,7 +29,7 @@ class Linear(Module):
         # check delta shape
         if len(delta.shape) == 1:
             delta = delta.reshape(1, -1)
-        assert delta.shape[1] == self._output
+        assert delta.shape[1] == self._output, f'delta.shape[1] = {delta.shape}, self._output = {self._output}'
 
         # accumulate gradient: loop over batch
         for b in inp:
