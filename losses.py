@@ -14,7 +14,11 @@ class MSELoss(Loss):
             loss: mean squared error of predictions vs targets, of shape (batchsize,)
         """        
         # Assertions
-        self.assert_type_and_shape(y, yhat)
+        if len(y.shape) == 1:
+            y = y.reshape(-1, 1)
+        if len(yhat.shape) == 1:
+            yhat = yhat.reshape(-1, 1)
+
         # Compute loss along second axis (one loss per example)
         return np.linalg.norm(y-yhat, axis=1) ** 2 
 
@@ -27,7 +31,11 @@ class MSELoss(Loss):
             yhat (numpy array): predictions of model of shape (batchsize, d)
         """
         # Assertions
-        self.assert_type_and_shape(y, yhat)
+        if len(y.shape) == 1:
+            y = y.reshape(-1, 1)
+        if len(yhat.shape) == 1:
+            yhat = yhat.reshape(-1, 1)
+
         # Compute gradient
         grad = -2 * np.linalg.norm(y-yhat, axis=1)
         return grad 
