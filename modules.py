@@ -1,5 +1,6 @@
 import numpy as np
 
+# Abstract Module
 class Module(object):
     def __init__(self):
         self._parameters = None
@@ -25,7 +26,7 @@ class Module(object):
         ## Calcul la derivee de l'erreur
         pass
     
-    
+# Linear Module
 class Linear(Module):
     def __init__(self, _input, _output, seed = None):
         self._input = _input
@@ -45,7 +46,6 @@ class Linear(Module):
         return X @ self._parameters
 
     def backward_update_gradient(self, inp, delta):
-        
         # check input shape
         if len(inp.shape) == 1:
             inp = inp.reshape(1, -1) # treat as batch array with only one batch
@@ -53,12 +53,13 @@ class Linear(Module):
 
         # check delta shape
         if len(delta.shape) == 1:
-            delta = delta.reshape(1, -1)
-        assert delta.shape[1] == self._output, f'delta.shape[1] = {delta.shape}, self._output = {self._output}'
+            delta = delta.reshape(-1, 1)
+            
+        assert delta.shape[1] == self._output, f'delta.shape[1] = {delta[1].shape}, self._output = {self._output}'
 
         # accumulate gradient: loop over batch
-        for b in inp:
-            self._gradient += b.reshape(-1, 1) @ delta
+        for b, d in zip(inp, delta):
+            self._gradient += b.reshape(-1, 1) @ d
 
     def update_parameters(self, gradient_step=0.001):
         self._parameters -= gradient_step*self._gradient
