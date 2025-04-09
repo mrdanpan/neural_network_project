@@ -1,5 +1,16 @@
 import numpy as np
-from projet_etu import Loss
+
+class Loss(object):
+    def forward(self, y, yhat):
+        pass
+
+    def backward(self, y, yhat):
+        pass
+
+    def assert_type_and_shape(self, y, yhat):
+        # Asserts to make sure y and yhat are numpy arrays, and of correct shape
+        assert isinstance(y, np.ndarray) and isinstance(yhat, np.ndarray), "y and yhat are not numpy arrays!"
+        assert y.shape == yhat.shape, f"y and yhat are not the same shape: y: {y.shape}, yhat: {yhat.shape}"
 
 class MSELoss(Loss):
     def forward(self, y, yhat):
