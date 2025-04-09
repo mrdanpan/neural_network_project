@@ -74,3 +74,43 @@ class Linear(Module):
         
         # in the linear case: deltas don't depend on input
         return delta @ self._parameters
+    
+# Sequential Module
+class Sequential(Module):
+
+    def __init__(self, modules: list[Module]):
+        self.modules = modules
+    
+    def zero_grad(self):
+            ## Annule gradient
+            for module in self.modules:
+                module.zero_grad()
+
+    def forward(self, X):
+        ## Calcule la passe forward
+        out = X
+        for module in self.modules:
+            out = module.forward(out)
+        return out
+
+    def update_parameters(self, gradient_step=1e-3):
+        ## Calcule la mise a jour des parametres selon le gradient calcule et le pas de gradient_step
+        for module in self.modules:
+            module.update_parameters(gradient_step)
+
+    def backward_update_gradient(self, inp, delta):
+        ## Met a jour la valeur du gradient
+        self.forward_delta(0, inp, delta, update_grad=True)
+
+    def backward_delta(self, inp, delta):
+        return self.forward_delta(0, inp, delta, update_grad=False)
+
+    def forward_delta(self, i_module, inp, delta, update_grad=False):
+        if i_module >= len(self.modules):
+            return delta
+        current_module = self.modules[i_module]
+        current_delta = self.forward_delta(self, i_module+1, current_module.forward(inp), delta, update_grad)
+        if update_grad:
+            current_module.backward_update_gradient(inp, current_delta)
+        return current_module.backward_delta(self, inp, current_delta)
+    

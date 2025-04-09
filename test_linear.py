@@ -101,42 +101,42 @@ plt.show()
 # exit()
 batch_sizes = [1, 10, 100]
 
-plt.figure(figsize=(12,8))
-for i, batch_size in enumerate(batch_sizes):
-    print(i)
-    # Initialise hyperparams
-    n_epochs = 200
-    lr = 0.01
-    seed = 13
-    # Obtain data
-    X_train, y_train = prepare_data(slope = 5, normalize = True, seed = seed)
-    # Initialise model and loss 
-    lin_module = Linear(1, 1, seed = seed)
-    mse_loss = MSELoss()
-    # Train
-    all_losses, all_params = train_model(X_train, y_train, lin_module, mse_loss, lr, batch_size, n_epochs, seed = seed, verbose = False)
+# plt.figure(figsize=(12,8))
+# for i, batch_size in enumerate(batch_sizes):
+#     print(i)
+#     Initialise hyperparams
+#     n_epochs = 200
+#     lr = 0.01
+#     seed = 13
+#     Obtain data
+#     X_train, y_train = prepare_data(slope = 5, normalize = True, seed = seed)
+#     Initialise model and loss 
+#     lin_module = Linear(1, 1, seed = seed)
+#     mse_loss = MSELoss()
+#     Train
+#     all_losses, all_params = train_model(X_train, y_train, lin_module, mse_loss, lr, batch_size, n_epochs, seed = seed, verbose = False)
     
-    # Visualization
-    plt.subplot(len(batch_sizes), 3, i*3 + 1)
-    plt.plot(all_losses)
-    plt.ylabel(f"batch_size = {batch_size}\n\nLoss (MSE)")
-    plt.xlabel("Epoch")
-    if i == 0: plt.title("Loss over epochs")
+#     Visualization
+#     plt.subplot(len(batch_sizes), 3, i*3 + 1)
+#     plt.plot(all_losses)
+#     plt.ylabel(f"batch_size = {batch_size}\n\nLoss (MSE)")
+#     plt.xlabel("Epoch")
+#     if i == 0: plt.title("Loss over epochs")
     
-    plt.subplot(len(batch_sizes), 3, i*3 + 2)
-    plt.plot(all_params)
-    plt.ylabel(f"Model Weight")
-    plt.xlabel("Epoch")
-    if i == 0: plt.title("Model Param")
+#     plt.subplot(len(batch_sizes), 3, i*3 + 2)
+#     plt.plot(all_params)
+#     plt.ylabel(f"Model Weight")
+#     plt.xlabel("Epoch")
+#     if i == 0: plt.title("Model Param")
     
-    m_hat = all_params[-1]
-    predictions = m_hat * np.linspace(0, 10, 50)
-    plt.subplot(len(batch_sizes), 2, i*3 + 3)
-    # plt.scatter(X_train, y_train)
-    # plt.plot(X_train, predictions, color = 'red', label = f'Prediction: y = {m_hat: .2f}')
-    # # plt.xlim([0,10])
-    # # plt.ylim([0, 50])
-    # plt.legend()
-    if i == 0: plt.title(f"Linear Regression against Training Data")
-plt.suptitle("Hyperparameter testing: batch size")
-plt.show()
+#     m_hat = all_params[-1]
+#     predictions = m_hat * np.linspace(0, 10, 50)
+#     plt.subplot(len(batch_sizes), 2, i*3 + 3)
+#     plt.scatter(X_train, y_train)
+#     plt.plot(X_train, predictions, color = 'red', label = f'Prediction: y = {m_hat: .2f}')
+#     # plt.xlim([0,10])
+#     # plt.ylim([0, 50])
+#     plt.legend()
+#     if i == 0: plt.title(f"Linear Regression against Training Data")
+# plt.suptitle("Hyperparameter testing: batch size")
+# plt.show()
