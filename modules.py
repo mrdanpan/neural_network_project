@@ -114,3 +114,24 @@ class Sequential(Module):
             current_module.backward_update_gradient(inp, current_delta)
         return current_module.backward_delta(self, inp, current_delta)
     
+
+# Activation function modules  
+class Sigmoid(Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, X):
+        # returns sigmoid(x)
+        sig = (np.e ** X ) / (np.e ** X + 1)
+        return sig
+
+class TanH(Module):
+    def __init__(self):
+        super().__init__()
+        
+    def forward(self, X):
+        # returns tanh(x)
+        tanh = (np.e ** (2*X) - 1) / (np.e ** (2*X) + 1) 
+        return tanh
+
+
