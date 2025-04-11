@@ -34,7 +34,7 @@ def train_model(X_train, y_train, model, loss_class, learning_rate, batch_size =
             model.update_parameters(learning_rate)
 
         # update parameters
-        all_losses.append(epoch_loss[0])
+        all_losses.append(np.mean(epoch_loss))
         all_params.append(model._parameters[0][0])
         
         if verbose: 
