@@ -76,6 +76,7 @@ class Linear(Module):
 class Sequential(Module):
     def __init__(self, modules: list[Module]):
         self.modules = modules
+        self._parameters = [module._parameters for module in self.modules]
     
     def zero_grad(self):
         ## Annule gradient
@@ -112,7 +113,7 @@ class Sequential(Module):
     
 # Activation function modules  
 def sigmoid(X):
-    return (np.e ** X) / (np.e ** X + 1)
+    return 1 / (1 + np.exp(-X))
 
 class Sigmoid(Module):
     def __init__(self):
@@ -134,7 +135,7 @@ class Sigmoid(Module):
     def backward_delta(self, input, delta):
         ## Calcul la derivee de l'erreur
         sigmoid_term = (sigmoid(input) * (1 - sigmoid(input)))
-        return (delta.reshape(-1,1) * sigmoid_term).flatten()
+        return delta * sigmoid_term
 
 def tanh(X):
     return (np.e ** (2*X) - 1) / (np.e ** (2*X) + 1) 

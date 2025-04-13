@@ -59,9 +59,9 @@ def plot_data(X,y):
 def train_model(X_train, y_train, nb_epochs, batch_size, lr, seed = 10):
 
     # Create MLP: Linear -> TanH -> Linear -> Sigmoid
-    lin1 = Linear(2, 4)
+    lin1 = Linear(2, 4, seed = seed)
     tan = TanH()
-    lin2 = Linear(4, 1)
+    lin2 = Linear(4, 1, seed = seed)
     sig = Sigmoid()
     model = [lin1, tan, lin2, sig]
     
@@ -116,7 +116,7 @@ def train_model(X_train, y_train, nb_epochs, batch_size, lr, seed = 10):
             tan.update_parameters(lr)
             lin2.update_parameters(lr)
             sig.update_parameters(lr)
-
+            
         # append metric stats 
         all_losses.append(np.mean(epoch_loss).item())
 
@@ -144,8 +144,8 @@ def plot_loss(losses, title = "MSE Loss"):
 if __name__ == "__main__":
     # Hyperparams 
     seed = 10
-    lr = 0.0001
-    batch_size = 5
+    lr = 0.001
+    batch_size = 1
 
     # Data preparation
     c1 = [1,1]; c2 = [3,3]
