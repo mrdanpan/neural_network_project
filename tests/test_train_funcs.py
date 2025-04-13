@@ -1,69 +1,37 @@
-import path_config as path_config
-from neural_network.modules import *
+import path_config
 from neural_network.losses import *
-import numpy as np
-import matplotlib.pyplot as plt
+from neural_network.modules import * 
+from neural_network.optim import * 
+from neural_network.train_gen import * 
+import matplotlib.pyplot as plt 
 
-# Train function
-def train_model(X_train, y_train, model, loss_class, learning_rate, batch_size = 1, n_epochs = 100, seed = None, verbose = True):
-    all_losses = []
-    all_params = [model._parameters[0][0]]
-    
-    for epoch in range(n_epochs):
-        model.zero_grad()
-        if seed is not None:
-            np.random.seed(seed + epoch)
-        permutation = list(range(len(X_train)))
-        np.random.shuffle(permutation)
+# Test linear to see if things are the same:
+from test_linear import (
+    prepare_data,
+    train_model,
+)
 
-        epoch_loss = 0
-        
-        for i in range(0, len(permutation), batch_size):
-            model.zero_grad()
-            X, y = X_train[permutation[i: i + batch_size]], y_train[permutation[i: i + batch_size]]
-
-            # forward
-            y_pred = model.forward(X)
-            loss = loss_class.forward(y, y_pred)
-            epoch_loss += loss
-
-            # backward
-            delta_loss = loss_class.backward(y, y_pred)
-            model.backward_update_gradient(X, delta_loss)
-            # no need to call lin_module.backward_delta()
-            model.update_parameters(learning_rate)
-
-        # update parameters
-        all_losses.append(np.mean(epoch_loss))
-        all_params.append(model._parameters[0][0])
-        
-        if verbose: 
-            print("current params", model._parameters)
-            print(f"Epoch {epoch} Loss: {epoch_loss}")
-
-    return all_losses, all_params
-
-# Initialise data
-def prepare_data(slope, normalize = True, seed = 10):
-    np.random.seed(seed)
-    X_train = np.linspace(0, 10, 50).reshape(-1, 1)
-    y_train = slope * X_train + np.random.normal(size=(X_train.shape), scale=5)
-
-    if normalize: 
-        X_train = (X_train - np.mean(X_train)) / np.std(X_train)
-        y_train = (y_train - np.mean(y_train)) / np.std(y_train)
-    return X_train, y_train
  
 if __name__ == "__main__":
+        
+    # Initialise data
+    def prepare_data(slope, normalize = True, seed = 10):
+        np.random.seed(seed)
+        X_train = np.linspace(0, 10, 50).reshape(-1, 1)
+        y_train = slope * X_train + np.random.normal(size=(X_train.shape), scale=5)
+
+        if normalize: 
+            X_train = (X_train - np.mean(X_train)) / np.std(X_train)
+            y_train = (y_train - np.mean(y_train)) / np.std(y_train)
+        return X_train, y_train
 
     # Test different learning rates
     lrs = [float(f'10e-{i}') for i in range(3,7)]
-    # lrs = [0.01, 0.005, 0.001, 0.0005, 0.0001]
 
     plt.figure(figsize=(12,8))
     for i,lr in enumerate(lrs):
         # Initialise hyperparams
-        n_epochs = 200
+        nb_epochs = 200
         batch_size = 1
         seed = 13
         # Obtain data
@@ -71,8 +39,9 @@ if __name__ == "__main__":
         # Initialise model and loss 
         lin_module = Linear(1, 1, seed = seed)
         mse_loss = MSELoss()
+        optimizer = Optim(lin_module, mse_loss, lr)
         # Train
-        all_losses, all_params = train_model(X_train, y_train, lin_module, mse_loss, lr, batch_size, n_epochs, seed = seed, verbose = False)
+        all_losses, all_params = MBGD(X_train, y_train, lin_module, mse_loss, optimizer, batch_size = 10, nb_epochs = nb_epochs, seed = seed, save_params=True)
         
         # Visualization
         plt.subplot(len(lrs), 3, i*3 + 1)
