@@ -149,7 +149,7 @@ if __name__ == "__main__":
 
     # Data preparation
     c1 = [1,1]; c2 = [3,3]
-    X, y = prepare_binary_class_data(c1, c2, n = 100, normalize=True)
+    X, y = prepare_binary_class_data(c1, c2, n = 100, normalize=True, seed = seed)
     X_train, y_train, X_test, y_test = split_train_test_data(X, y, perc_test=.2, seed = seed)
 
     all_losses_1, model_1 = train_model(X_train, y_train, nb_epochs=1, batch_size=1, lr = lr, seed = seed)

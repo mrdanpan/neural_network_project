@@ -1,4 +1,5 @@
 import numpy as np
+from util import tanh, sigmoid, softmax, log_softmax
 
 # Abstract Module
 class Module(object):
@@ -112,9 +113,6 @@ class Sequential(Module):
         return current_module.backward_delta(inp, current_delta)
     
 # Activation function modules  
-def sigmoid(X):
-    return 1 / (1 + np.exp(-X))
-
 class Sigmoid(Module):
     def __init__(self):
         super().__init__()
@@ -136,9 +134,6 @@ class Sigmoid(Module):
         ## Calcul la derivee de l'erreur
         sigmoid_term = (sigmoid(input) * (1 - sigmoid(input)))
         return delta * sigmoid_term
-
-def tanh(X):
-    return (np.e ** (2*X) - 1) / (np.e ** (2*X) + 1) 
 
 class TanH(Module):
     def __init__(self):
@@ -163,3 +158,29 @@ class TanH(Module):
         tanh_term = (1 - tanh(input)**2)
         return delta * tanh_term
     
+
+class SoftMax(Module):
+    def __init__(self, _input, log = False):
+        self._input = _input
+        self.log = log
+    
+    def forward(self, X):
+        # return softmax(X) 
+        return log_softmax(X) if self.log else softmax(X)
+    
+    def zero_grad(self):
+        pass
+
+    def update_parameters(self, gradient_step=1e-3):
+        pass
+
+    def backward_update_gradient(self, input, delta):
+        pass
+
+    def backward_delta(self, input, delta):
+        pass
+    
+        # if not self.log: return delta * softmax(input)
+        # else:
+        #     return 1 / (log_softmax(input) * np.log(10)) * log_softmax(input) 
+        
