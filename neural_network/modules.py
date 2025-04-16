@@ -163,8 +163,8 @@ class TanH(Module):
     
 
 class SoftMax(Module):
-    def __init__(self, _input, log = False):
-        self._input = _input
+    def __init__(self, log = False):
+        super().__init__()
         self.log = log
     
     def forward(self, X):
@@ -181,7 +181,7 @@ class SoftMax(Module):
         pass
 
     def backward_delta(self, input, delta, log = False):
-        jacob = jacob_softmax(softmax(input, log = log))
+        jacob = jacob_softmax(softmax(input))
         back_delta = np.zeros(shape=delta.shape) # delta_i-1 should have same shape as delta_i
         
         for i, delta_i in enumerate(delta):
