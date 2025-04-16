@@ -1,5 +1,8 @@
 import numpy as np
-from util import tanh, sigmoid, softmax, log_softmax
+from .util import (
+    tanh, sigmoid, 
+    softmax, jacob_softmax, log_softmax
+    )
 
 # Abstract Module
 class Module(object):
@@ -177,10 +180,13 @@ class SoftMax(Module):
     def backward_update_gradient(self, input, delta):
         pass
 
-    def backward_delta(self, input, delta):
-        pass
-    
-        # if not self.log: return delta * softmax(input)
-        # else:
-        #     return 1 / (log_softmax(input) * np.log(10)) * log_softmax(input) 
+    def backward_delta(self, input, delta, log = False):
+        jacob = jacob_softmax(softmax(input, log = log))
+        back_delta = np.zeros(shape=delta.shape) # delta_i-1 should have same shape as delta_i
         
+        for i, delta_i in enumerate(delta):
+            back_delta[i, :] = delta_i @ jacob[i, :, :]
+
+        return back_delta
+       
+    

@@ -53,7 +53,7 @@ class MSELoss(Loss):
     
     
 class CrossEntropy(Loss):
-    def forward(self, y, yhat, log = False):
+    def forward(self, y, yhat, log = False, eps = 1e-10):
         """Returns the CE loss 
 
         Args:
@@ -62,28 +62,15 @@ class CrossEntropy(Loss):
                             of size (batch_size, num_classes)
             log (boolean): decides whether we want logCE or not 
         """
-        ones_idxs = np.where(y == 1)[1]
-        ce = np.zeros(shape=(y.shape[0],))
-        for i, row in enumerate(yhat):
-            ce[i] = -row[ones_idxs[i]]
+        ce = np.zeros(shape = (y.shape[0]))
+        for i, (row_y, row_yhat) in enumerate(zip(y, yhat)):
+            idx_1 = np.where(row_y == 1)[0][0]
+            if not log:
+                ce[i] = - np.log(row_yhat[idx_1]) # since we are dealing with one-hots 
+            else: 
+                ce[i] = - row_yhat[idx_1]
 
-        return ce if not log else ce + np.log10(np.sum(np.exp(yhat), axis = 1))
+        return ce
 
-    def backward(self, y, yhat):
-        pass
-
-# seed = 10
-# np.random.seed(seed = seed)
-# x = np.zeros(shape=(5,6))
-# idxs_ones = np.random.randint(0, 5, size = (5))
-# for i, row in enumerate(x):
-#     row[idxs_ones[i]] = 1
-# x_pred = np.random.random(size = (5,6))
-
-# print(x)
-# print(x_pred)
-
-# CE = CrossEntropy()
-# f = CE.forward(x, x_pred, log=True)
-
-# print(f)
+    def backward(self, y, yhat, log = False):
+        return yhat - y if not log else np.exp(yhat) - y

@@ -8,29 +8,29 @@ def tanh(X):
 
 def softmax(X):
     D = -np.max(X, axis = 1).reshape(-1,1) # Coeff to help with stability of softmax
-    print(D)
     denom = np.sum(np.exp(X + D), axis = 1)
     return (np.exp(X.T + D.T)/ denom).T
 
+def log_softmax(X): # Note, this is natural log
+    return np.log(softmax(X))
 
-def log_softmax(X, eps = 1e-5):
-    return np.log10(softmax(X) + eps)
-
-def deriv_softmax(X):
+def jacob_softmax(S):
     """
     Refer to: https://eli.thegreenplace.net/2016/the-softmax-function-and-its-derivative/
     
     Returns the derivative of Softmax(X) = S (s1, ..., s_dim) in terms of its 
     inputs X (x1, ..., x_dim). 
-    dS/dX = jacob(S) of shape (j, j) = 
-
+    dS/dX = jacob(S) of shape (j, j), where jacob(S)ij = DiSj = d(Sj)/d(xi) 
+          = Sj(1 - Si) if i = j, -Sj * Si otherwise
+          
     Args:
-        X (np.ndarray): (batchsize, dim)
+        S (np.ndarray): (batchsize, num_classes)
+    Returns:
+        res (np.ndarray): jacobian matrix (batchsize, num_classes, num_classes)
     """
-    pass
-
-np.random.seed(10)
-x = np.random.random(size = (5,4))
-print(x)
-print(softmax(x))
-print(log_softmax(x))
+    res = np.zeros(shape=(S.shape[0],S.shape[1],S.shape[1]))
+    for i, row in enumerate(S):
+        # compute jacobian for current batch example
+        jacob_i = np.diagflat(row) - np.outer(row, row) 
+        res[i] = jacob_i 
+    return res
