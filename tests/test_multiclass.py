@@ -66,7 +66,7 @@ model = Sequential([Linear(28 * 28, 100), Sigmoid(), Linear(100, 10), SoftMax()]
 loss = CrossEntropy()
 optim = Optim(model, loss, eps = 1e-4)
 
-all_losses = MBGD(X_train, y_train_onehot, model, loss, optim, batch_size = 100, nb_epochs = 100, seed = 10)
+all_losses = MBGD(X_train, y_train_onehot, model, loss, optim, batch_size = 100, nb_epochs = 500, seed = 10)
 
 preds = model.forward(X_test[0:10])
 print(preds)

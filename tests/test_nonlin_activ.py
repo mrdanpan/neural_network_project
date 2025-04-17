@@ -36,7 +36,7 @@ def split_train_test_data(X, y, perc_test = 0.2, seed = 10):
     permutation = list(range(len(X)))
     np.random.shuffle(permutation)
     
-    cutoff_idx = int(len(permutation)*perc_test)
+    cutoff_idx = int(len(permutation)*(1 - perc_test))
     X_train, y_train = X[permutation[:cutoff_idx]], y[permutation[:cutoff_idx]]
     X_test, y_test = X[permutation[cutoff_idx:]], y[permutation[cutoff_idx:]]
     
@@ -53,8 +53,6 @@ def plot_data(X,y):
     plt.legend(by_label.values(), by_label.keys())
     plt.xlabel("x1"); plt.ylabel("x2")
     plt.title("Data points")
-    plt.show()
-    
     
 def train_model(X_train, y_train, nb_epochs, batch_size, lr, seed = 10):
 
@@ -148,18 +146,27 @@ if __name__ == "__main__":
     batch_size = 1
 
     # Data preparation
-    c1 = [1,1]; c2 = [3,3]
+    c1 = [1,2]; c2 = [3,5]
     X, y = prepare_binary_class_data(c1, c2, n = 100, normalize=True, seed = seed)
     X_train, y_train, X_test, y_test = split_train_test_data(X, y, perc_test=.2, seed = seed)
 
+    # lin1 = Linear(2, 4, seed = seed)
+    # tan = TanH()
+    # lin2 = Linear(4, 1, seed = seed)
+    # sig = Sigmoid()
+    # model = [lin1, tan, lin2, sig]
+    # print(f'Score for model with 0 training: {score(X_test, y_test, model)} ')
     all_losses_1, model_1 = train_model(X_train, y_train, nb_epochs=1, batch_size=1, lr = lr, seed = seed)
     print(f'Score for model with 1 training epoch: {score(X_test, y_test, model_1)} ')
 
-    all_losses_100, model_100 = train_model(X_train, y_train, nb_epochs=100, batch_size=1, lr = lr, seed = seed)
-    print(f'Score for model with 100 training epochs: {score(X_test, y_test, model_100)} ')
+    n_epochs = 1000
+    all_losses_2, model_2= train_model(X_train, y_train, nb_epochs=n_epochs, batch_size=1, lr = lr, seed = seed)
+    print(f'Score for model with {n_epochs} training epochs: {score(X_test, y_test, model_2)} ')
 
-    plot_loss(all_losses_100,  title = "Losses for model trained on 100 epochs")
+    plt.figure(figsize=(12,6))
+    plt.subplot(1,2,1)
+    plot_data(X,y)
+    plt.subplot(1,2,2)
+    plot_loss(all_losses_2,  title = f"Losses for model trained on {n_epochs} epochs")
     plt.show()
 
-    # Note: This is not a good model. Training doesn't increase score very much...
-    # Could be due to use of MSE loss instead of typical BCE? Should probably look into this...

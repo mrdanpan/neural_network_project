@@ -30,8 +30,8 @@ class MSELoss(Loss):
         if len(yhat.shape) == 1:
             yhat = yhat.reshape(-1, 1)
 
-        # Compute loss along second axis (one loss per example)
-        return np.linalg.norm(y-yhat, axis=1) ** 2 
+        # Compute loss 
+        return np.mean((y-yhat)**2)
 
     def backward(self, y, yhat):
         """Calculates the gradient of MSE loss in terms of yhat
@@ -46,10 +46,12 @@ class MSELoss(Loss):
             y = y.reshape(-1, 1)
         if len(yhat.shape) == 1:
             yhat = yhat.reshape(-1, 1)
+            
+        batch_size, dim = y.shape
 
         # Compute gradient
-        grad = -2 * np.linalg.norm(y-yhat, axis=1)
-        return grad 
+        grad = -2 * (y - yhat) / (dim * batch_size) # Average over all elements in batch...
+        return grad
     
     
 class CrossEntropy(Loss):
@@ -74,3 +76,5 @@ class CrossEntropy(Loss):
 
     def backward(self, y, yhat, log = False):
         return yhat - y if not log else np.exp(yhat) - y
+    
+    

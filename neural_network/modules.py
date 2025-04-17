@@ -36,7 +36,7 @@ class Linear(Module):
         self._input = _input
         self._output = _output
         if seed is not None: np.random.seed(seed)
-        self._parameters = np.random.rand(_input, _output)
+        self._parameters = np.random.randn(_input, _output)
 
     def zero_grad(self):
         self._gradient = np.zeros(self._parameters.shape)
@@ -76,6 +76,8 @@ class Linear(Module):
         # in the linear case: deltas don't depend on input
         return delta @ self._parameters.T
     
+    
+
 # Sequential Module
 class Sequential(Module):
     def __init__(self, modules: list[Module]):
@@ -102,6 +104,8 @@ class Sequential(Module):
     def backward_update_gradient(self, inp, delta):
         ## Met a jour la valeur du gradient
         self.forward_delta(0, inp, delta, update_grad=True)
+        # for module in self.modules:
+        #     print(module._gradient)
 
     def backward_delta(self, inp, delta):
         return self.forward_delta(0, inp, delta, update_grad=False)

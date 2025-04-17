@@ -47,6 +47,7 @@ if __name__ == "__main__":
         plt.subplot(len(lrs), 3, i*3 + 1)
         plt.plot(all_losses)
         plt.ylabel(f"lr = {lr}\n\nLoss")
+        plt.ylim(bottom = 0)
         plt.xlabel("Epoch")
         if i == 0: plt.title("Loss over epochs")
         
@@ -88,6 +89,7 @@ if __name__ == "__main__":
         plt.plot(all_losses)
         plt.ylabel(f"batch_size = {batch_size}\n\nLoss (MSE)")
         plt.xlabel("Epoch")
+        plt.ylim(bottom = 0)
         if i == 0: plt.title("Loss over epochs")
         
         plt.subplot(len(batch_sizes), 3, i*3 + 2)

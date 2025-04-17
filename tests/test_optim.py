@@ -80,12 +80,13 @@ all_losses_optim = train_model(
             verbose = False
             )
             
+plt.figure(figsize=(15,6))
 # Without optim
 plt.subplot(2,2,1)
 plt.plot(all_losses)
 plt.ylabel("Loss")
 plt.xlabel("Epoch")
-plt.title("Loss over epochs")
+plt.title("Loss over epochs (no Optim)")
 
 m_hat = net._parameters[0][0]
 predictions = m_hat * X
@@ -94,13 +95,14 @@ plt.scatter(X, y)
 plt.plot(X, predictions, color = 'red', label = f'Prediction: y = {m_hat: .2f}')
 plt.xlim([-2,2]); plt.ylim([-2,2])
 plt.legend()
-plt.title(f"Linear Regression against Training Data")
+plt.title(f"Linear Regression against Training Data (no Optim)")
 
 # With optim
 plt.subplot(2,2,3)
 plt.plot(all_losses_optim)
 plt.ylabel("Loss")
 plt.xlabel("Epoch")
+plt.title("Loss over epochs (with Optim)")
 
 m_hat = net2._parameters[0][0]
 predictions = m_hat * X
@@ -109,6 +111,7 @@ plt.scatter(X, y)
 plt.plot(X, predictions, color = 'red', label = f'Prediction: y = {m_hat: .2f}')
 plt.legend()
 plt.xlim([-2,2]); plt.ylim([-2,2])
+plt.title(f"Linear Regression against Training Data (with Optim)")
 
 plt.show()
         
