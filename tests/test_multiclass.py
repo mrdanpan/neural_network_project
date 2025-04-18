@@ -52,8 +52,9 @@ assert np.allclose(loss_module_log, loss_torch_log)
 X_train, y_train = zip(*MNIST(root='./data', train=True, download=True, transform=ToTensor()))
 X_test, y_test = zip(*MNIST(root='./data', train=False, download=True, transform=ToTensor()))
 
-X_train, y_train = np.array([x.flatten() for x in X_train])[0:5000], np.array(y_train)[0:5000]
-X_test, y_test = np.array([x.flatten() for x in X_test])[0:5000], np.array(y_test)[0:5000]
+size_ds = 10000 # modify in terms of computational load
+X_train, y_train = np.array([x.flatten() for x in X_train])[0:size_ds], np.array(y_train)[0:size_ds]
+X_test, y_test = np.array([x.flatten() for x in X_test])[0:size_ds], np.array(y_test)[0:size_ds]
 
 y_train_onehot = np.zeros(shape = (np.array(y_train).shape[0],10))
 y_train_onehot[np.arange(y_train.shape[0]), y_train] = 1
