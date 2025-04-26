@@ -44,7 +44,7 @@ class Linear(Module):
     def forward(self, X):
         if len(X.shape) == 1:
             X = X.reshape(1, -1) # treat as batch array with only one batch
-        assert X.shape[1] == self._input
+        assert X.shape[1] == self._input, f"{X.shape[1]} != {self._input}"
 
         # out = matrix multiplication with parameters
         return X @ self._parameters
@@ -104,8 +104,6 @@ class Sequential(Module):
     def backward_update_gradient(self, inp, delta):
         ## Met a jour la valeur du gradient
         self.forward_delta(0, inp, delta, update_grad=True)
-        # for module in self.modules:
-        #     print(module._gradient)
 
     def backward_delta(self, inp, delta):
         return self.forward_delta(0, inp, delta, update_grad=False)
