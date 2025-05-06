@@ -96,6 +96,7 @@ if __name__ == "__main__":
         plt.legend()
         if i == 0: plt.title(f"Linear Regression against Training Data")
     plt.suptitle("Hyperparameter testing: learning rate")
+    plt.savefig('tests/figs/linear_learning_rate.png')
     plt.show()
 
     # Test different batch sizes
@@ -136,5 +137,7 @@ if __name__ == "__main__":
         plt.plot(X_train, predictions, color = 'red', label = f'Prediction: y = {m_hat: .2f}')
         plt.legend()
         if i == 0: plt.title(f"Linear Regression against Training Data")
+
     plt.suptitle("Hyperparameter testing: batch size")
+    plt.savefig('tests/figs/linear_batch_size.png')
     plt.show()
