@@ -2,3 +2,4 @@
 /tests/__pycache__/**
 /neural_network/__pycache__
 *.pyc
+neural_network/__pycache__/*

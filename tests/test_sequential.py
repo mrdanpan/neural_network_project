@@ -1,4 +1,5 @@
 
+import torch
 import path_config
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,7 +11,6 @@ from test_nonlin_activ import (
     plot_loss,
     plot_data
 )
-import torch
 
 def train_model(X_train, y_train, model, loss_class, learning_rate, batch_size = 1, nb_epochs = 100, seed = None, verbose = True):
     all_losses = []
