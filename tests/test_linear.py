@@ -4,6 +4,7 @@ from neural_network.losses import *
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 # Train function
 def train_model(X_train, y_train, model, loss_class, learning_rate, batch_size = 1, n_epochs = 100, seed = None, verbose = True):
     all_losses = []
@@ -53,7 +54,7 @@ def prepare_data(slope, normalize = True, seed = 10):
         X_train = (X_train - np.mean(X_train)) / np.std(X_train)
         y_train = (y_train - np.mean(y_train)) / np.std(y_train)
     return X_train, y_train
- 
+
 if __name__ == "__main__":
 
     # Test different learning rates

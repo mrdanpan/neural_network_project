@@ -139,6 +139,52 @@ def plot_loss(losses, title = "MSE Loss"):
     plt.ylabel("MSE Loss")
 
 
+def confusion_matrix(X_test, y_test, model, threshold=0.5, proportions = True):
+    #[[TN, FP], [FN, TP]]
+    y_pred = X_test
+    for layer in model:
+        y_pred = layer.forward(y_pred)
+        
+    labels = np.unique(y_test)
+
+    y_pred_bin = (y_pred >= threshold).astype(int).flatten()
+
+    conf_mat = np.zeros((2, 2), dtype=int)  # [[TN, FP], [FN, TP]]
+    print(labels)
+
+    for y_hat, y_true in zip(y_pred_bin, y_test):
+        if y_true == labels[1]:
+            if y_hat == labels[1]:
+                conf_mat[1, 1] += 1  # TP
+            else:
+                conf_mat[1, 0] += 1  # FN
+        else:
+            if y_hat == labels[1]:
+                conf_mat[0, 1] += 1  # FP
+            else:
+                conf_mat[0, 0] += 1  # TN
+
+    if proportions:
+        conf_mat = conf_mat.astype(float)/y_test.shape[0]
+    return conf_mat
+
+import matplotlib.pyplot as plt
+
+def plot_confusion_matrix(conf_mat, title="Confusion Matrix", proportions=True):
+    plt.imshow(conf_mat, cmap='viridis')
+    plt.title(title)
+    plt.colorbar()
+
+    plt.xticks([0, 1], ['N', 'P'])
+    plt.yticks([0, 1], ['N', 'P'])
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+
+    for (i, j), val in np.ndenumerate(conf_mat):
+        fmt = ".2f" if proportions else "d"
+        plt.text(j, i, format(val, fmt), ha='center', va='center', color='black')
+
+
 if __name__ == "__main__":
     # Hyperparams 
     seed = 10
@@ -150,23 +196,39 @@ if __name__ == "__main__":
     X, y = prepare_binary_class_data(c1, c2, n = 100, normalize=True, seed = seed)
     X_train, y_train, X_test, y_test = split_train_test_data(X, y, perc_test=.2, seed = seed)
 
-    # lin1 = Linear(2, 4, seed = seed)
-    # tan = TanH()
-    # lin2 = Linear(4, 1, seed = seed)
-    # sig = Sigmoid()
-    # model = [lin1, tan, lin2, sig]
-    # print(f'Score for model with 0 training: {score(X_test, y_test, model)} ')
-    all_losses_1, model_1 = train_model(X_train, y_train, nb_epochs=1, batch_size=1, lr = lr, seed = seed)
+    all_losses_1, model_1 = train_model(X_train, y_train, nb_epochs=2, batch_size=1, lr = lr, seed = seed)
     print(f'Score for model with 1 training epoch: {score(X_test, y_test, model_1)} ')
+    conf_mat_train = confusion_matrix(X_train, y_train, model_1, proportions=True)
+    conf_mat_test = confusion_matrix(X_test, y_test, model_1, proportions=True)
+    
+    plt.figure(figsize=(20,5))
+    plt.subplot(1,4,1)
+    plot_data(X,y)
+    plt.subplot(1,4,2)
+    plot_loss(all_losses_1,  title = f"Losses for model trained on {2} epochs")
+    plt.subplot(1,4,3)
+    plot_confusion_matrix(conf_mat_train, title="Confusion Matrix (Train)", proportions=True)
+    plt.subplot(1,4,4)
+    plot_confusion_matrix(conf_mat_test, title="Confusion Matrix (Test)", proportions=True)
+    plt.suptitle("Training on 2 epochs")
+    plt.show()
 
+    
     n_epochs = 1000
     all_losses_2, model_2= train_model(X_train, y_train, nb_epochs=n_epochs, batch_size=1, lr = lr, seed = seed)
     print(f'Score for model with {n_epochs} training epochs: {score(X_test, y_test, model_2)} ')
+    conf_mat_train = confusion_matrix(X_train, y_train, model_2, proportions=True)
+    conf_mat_test = confusion_matrix(X_test, y_test, model_1, proportions=True)
 
-    plt.figure(figsize=(12,6))
-    plt.subplot(1,2,1)
+    plt.figure(figsize=(20,5))
+    plt.subplot(1,4,1)
     plot_data(X,y)
-    plt.subplot(1,2,2)
+    plt.subplot(1,4,2)
     plot_loss(all_losses_2,  title = f"Losses for model trained on {n_epochs} epochs")
+    plt.subplot(1,4,3)
+    plot_confusion_matrix(conf_mat_train, title="Confusion Matrix (Train)", proportions=True)
+    plt.subplot(1,4,4)
+    plot_confusion_matrix(conf_mat_test, title="Confusion Matrix (Train)", proportions=True)
+    plt.suptitle("Training on 1000 epochs")
     plt.show()
 

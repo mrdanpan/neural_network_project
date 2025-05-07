@@ -3,3 +3,4 @@
 /neural_network/__pycache__
 *.pyc
 neural_network/__pycache__/*
+/data

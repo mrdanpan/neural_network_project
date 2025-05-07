@@ -1,10 +1,11 @@
 import numpy as np
+from tqdm import tqdm
 
 def MBGD(X_train, y_train, model, loss_class, optimizer, batch_size = 10, nb_epochs = 100, seed = None, verbose = True, save_params = False):
     all_losses = []
-    if save_params: all_params = [model._parameters[0][0]]
+    if save_params: all_params = [model._parameters]
     
-    for epoch in range(nb_epochs):
+    for epoch in tqdm(range(nb_epochs)):
         model.zero_grad()
         
         if seed is not None:
@@ -31,7 +32,7 @@ def MBGD(X_train, y_train, model, loss_class, optimizer, batch_size = 10, nb_epo
             
         # update training metrics 
         all_losses.append(np.mean(epoch_loss))
-        if save_params: all_params.append(model._parameters[0][0])
+        if save_params: all_params.append(model._parameters)
         
         if verbose: 
             print(f"Epoch {epoch} Loss: {epoch_loss}")
