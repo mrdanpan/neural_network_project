@@ -68,7 +68,7 @@ if __name__ == "__main__":
         batch_size = 1
         seed = 13
         # Obtain data
-        X_train, y_train = prepare_data(slope = 5, normalize = True, seed = seed)
+        X_train, y_train = prepare_data(slope = 5, normalize = False, seed = seed)
         # Initialise model and loss 
         lin_module = Linear(1, 1, seed = seed)
         mse_loss = MSELoss()
@@ -97,7 +97,7 @@ if __name__ == "__main__":
         plt.legend()
         if i == 0: plt.title(f"Linear Regression against Training Data")
     plt.suptitle("Hyperparameter testing: learning rate")
-    plt.savefig('tests/figs/linear_learning_rate.png')
+    plt.savefig('tests/figs/linear_learning_rate_non_norm.png')
     plt.show()
 
     # Test different batch sizes
@@ -110,7 +110,7 @@ if __name__ == "__main__":
         lr = 0.01
         seed = 13
         # Obtain data
-        X_train, y_train = prepare_data(slope = 5, normalize = True, seed = seed)
+        X_train, y_train = prepare_data(slope = 5, normalize = False, seed = seed)
         # Initialise model and loss 
         lin_module = Linear(1, 1, seed = seed)
         mse_loss = MSELoss()
@@ -140,5 +140,5 @@ if __name__ == "__main__":
         if i == 0: plt.title(f"Linear Regression against Training Data")
 
     plt.suptitle("Hyperparameter testing: batch size")
-    plt.savefig('tests/figs/linear_batch_size.png')
+    plt.savefig('tests/figs/linear_batch_size_non_norm.png')
     plt.show()

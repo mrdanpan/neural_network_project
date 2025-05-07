@@ -8,6 +8,7 @@ import numpy as np
 import torch
 from torchvision.datasets import MNIST
 from torchvision.transforms import ToTensor
+import matplotlib.pyplot as plt
 
 
 # Data preparation
@@ -46,7 +47,6 @@ loss_torch_log = torch.nn.NLLLoss(reduction = 'none').forward(torch.from_numpy(s
 assert np.allclose(loss_module_log, loss_torch_log)
 
 # Testing backward functions: pytorch does it in term of logits, so gradients are not directly comparable...
-
 ## Testing on MNIST
 # Data prep
 X_train, y_train = zip(*MNIST(root='./data', train=True, download=True, transform=ToTensor()))
@@ -62,15 +62,62 @@ y_train_onehot[np.arange(y_train.shape[0]), y_train] = 1
 y_test_onehot = np.zeros(shape = (np.array(y_test).shape[0],10))
 y_test_onehot[np.arange(y_test.shape[0]), y_test] = 1
 
+# print(y_test_onehot[3])
+# print(np.argmax(y_test_onehot[3]))
+# plt.imshow(X_test[3].reshape(28,28))
+# plt.show()
+
+# exit()
+
+# Function for quality check
+def show_model_pred(X_test, y_test_onehot, nb_epochs, save_path = None):
+    range_min = 100; range_max = 105
+    preds = model.forward(X_test[range_min:range_max])
+    plt.figure(figsize = (4,8))
+    for i, (image, pred) in enumerate(zip(X_test[range_min:range_max], preds)):
+        true_label = np.argmax(y_test_onehot[range_min + i])
+        
+        print(y_test_onehot[range_min + i])
+        print(pred)
+        print()
+        
+        plt.subplot(5, 2, i*2 + 1)
+        plt.imshow(image.reshape(28,28), cmap = 'grey')
+        plt.xticks([]); plt.yticks([])
+        
+        plt.subplot(5, 2, i*2 + 2)
+        plt.bar(np.arange(10), pred)    
+        plt.xticks(np.arange(10))
+        plt.xlim(left = -1) 
+        plt.yticks(np.arange(0,1.25,0.25))
+        plt.grid(True)
+        
+        ax = plt.gca()
+        xticks = ax.get_xticklabels()
+        xticks[true_label].set_color('red')
+        
+    plt.suptitle(f"Model predictions on test set after {nb_epochs} epochs")
+    if save_path: 
+        fig_im = f'{save_path}multiclass_predictions_{nb_epochs}epochs.png'
+        plt.savefig(fig_im)
+    plt.show()
+    
 # Model training
 model = Sequential([Linear(28 * 28, 100), Sigmoid(), Linear(100, 10), SoftMax()])
 loss = CrossEntropy()
 optim = Optim(model, loss, eps = 1e-4)
 
+show_model_pred(X_test, y_test_onehot, nb_epochs=0, save_path='tests/figs/')
 all_losses = MBGD(X_train, y_train_onehot, model, loss, optim, batch_size = 100, nb_epochs = 500, seed = 10)
+show_model_pred(X_test, y_test_onehot, nb_epochs=500, save_path='tests/figs/')
 
-preds = model.forward(X_test[0:10])
-print(preds)
-print(y_test_onehot[0:10])
+
+plt.figure(figsize=(12,6))
+plt.plot(all_losses)
+plt.title('CE Loss over Epochs')
+plt.xlabel("Epoch")
+plt.ylabel("CE Loss")
+plt.savefig('tests/figs/multiclass_model_loss.png')
+
 
 

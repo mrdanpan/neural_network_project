@@ -36,7 +36,7 @@ class Linear(Module):
         self._input = _input
         self._output = _output
         if seed is not None: np.random.seed(seed)
-        self._parameters = np.random.randn(_input, _output)
+        self._parameters = np.random.randn(_input, _output) * 0.01
 
     def zero_grad(self):
         self._gradient = np.zeros(self._parameters.shape)
@@ -182,7 +182,7 @@ class SoftMax(Module):
     def backward_update_gradient(self, input, delta):
         pass
 
-    def backward_delta(self, input, delta, log = False):
+    def backward_delta(self, input, delta):
         jacob = jacob_softmax(softmax(input))
         back_delta = np.zeros(shape=delta.shape) # delta_i-1 should have same shape as delta_i
         

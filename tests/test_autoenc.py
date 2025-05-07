@@ -41,7 +41,8 @@ X_train, X_test = split_train_test_data(X, perc_test = 0.2, seed = 10)
 
 for i in range(16):
     plt.subplot(4,4,i+1)
-    plt.imshow(transforms.ToPILImage()(X_train[i]))
+    plt.imshow(transforms.ToPILImage()(X_train[i].reshape(256,256)), cmap = 'grey')
+    plt.xticks([]); plt.yticks([])
 im_f = autoenc_dir + "dataset_images"
 plt.savefig(im_f)
 
@@ -54,11 +55,24 @@ autoencoder = Sequential([Linear(num_pixels, hidden1_num_neurons), TanH(), Linea
 
 loss = MSELoss()
 optim = Optim(autoencoder, loss, eps=1e-2)
-all_losses = MBGD(X_train, X_train, autoencoder, loss, optim, batch_size = 10, nb_epochs = 2, seed = None, verbose = True, save_params = True)
-params = autoencoder._parameters
-for i in [0,-1]:
+all_losses, all_params = MBGD(X_train, X_train, autoencoder, loss, optim, batch_size = 10, nb_epochs = 300, seed = None, verbose = True, save_params = True)
+
+# Save parameters
+for i in [0, 150, 300]:
     with open(f'{autoenc_dir}/autoencoder_params_MSE_epoch{i}.pkl', 'wb') as f:
-        pickle.dump(params[i], f)
+        pickle.dump(all_params[i], f)
+
+# Plot loss
+with open(f'{autoenc_dir}/losses_training.pkl', 'wb') as f:
+    pickle.dump(all_losses, f)
+    
+plt.figure(figsize=(8,8))
+print(all_losses)
+plt.plot(all_losses)
+plt.title('Autoencoder Training Loss')
+plt.xlabel("Epoch")
+plt.ylabel("MSE Loss")
+plt.savefig(f'{autoenc_dir}/losses.png')
     
 plt.figure(figsize=(12,4))
 for i in range(10):
