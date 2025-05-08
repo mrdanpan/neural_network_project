@@ -233,9 +233,8 @@ if __name__ == "__main__":
     plt.suptitle(f'Training on {n_epochs} epochs')
     plt.show()
 
-    
-    n_epochs = 100
-    all_losses_2, model_2 = train_model(X_train, y_train, nb_epochs=n_epochs, batch_size=1, lr = lr, seed = seed)
+    n_epochs = 1000
+    all_losses_2, model_2= train_model(X_train, y_train, nb_epochs=n_epochs, batch_size=1, lr = lr, seed = seed)
     print(f'Score for model with {n_epochs} training epochs: {score(X_test, y_test, model_2)} ')
     
     conf_mat_train, train_tup = confusion_matrix(X_train, y_train, model_2, proportions=True, return_data=True)

@@ -36,7 +36,8 @@ class Linear(Module):
         self._input = _input
         self._output = _output
         if seed is not None: np.random.seed(seed)
-        self._parameters = np.random.randn(_input, _output) * 0.01
+        # self._parameters = np.random.randn(_input, _output) * 0.01
+        self._parameters = np.random.randn(_input, _output) * np.sqrt(2. / (_input + _output))
 
     def zero_grad(self):
         self._gradient = np.zeros(self._parameters.shape)
@@ -137,7 +138,8 @@ class Sigmoid(Module):
 
     def backward_delta(self, input, delta):
         ## Calcul la derivee de l'erreur
-        sigmoid_term = (sigmoid(input) * (1 - sigmoid(input)))
+        sig_term = sigmoid(input)
+        sigmoid_term = (sig_term * (1 - sig_term))
         return delta * sigmoid_term
 
 class TanH(Module):

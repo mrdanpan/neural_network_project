@@ -11,7 +11,6 @@ from test_linear import (
     train_model,
 )
 
- 
 if __name__ == "__main__":
         
     # Initialise data
@@ -41,7 +40,10 @@ if __name__ == "__main__":
         mse_loss = MSELoss()
         optimizer = Optim(lin_module, mse_loss, lr)
         # Train
-        all_losses, all_params = MBGD(X_train, y_train, lin_module, mse_loss, optimizer, batch_size = 10, nb_epochs = nb_epochs, seed = seed, save_params=True)
+        all_losses, all_params = MBGD(X_train, y_train, lin_module, mse_loss, optimizer, batch_size = batch_size, nb_epochs = nb_epochs, seed = seed, save_params=True, verbose = False)
+        all_params = [np.array(p).squeeze() for p in all_params]
+        print(all_params[0:5])
+        
         
         # Visualization
         plt.subplot(len(lrs), 3, i*3 + 1)
@@ -81,8 +83,10 @@ if __name__ == "__main__":
         # Initialise model and loss 
         lin_module = Linear(1, 1, seed = seed)
         mse_loss = MSELoss()
+        optimizer = Optim(lin_module, mse_loss, lr)
         # Train
-        all_losses, all_params = train_model(X_train, y_train, lin_module, mse_loss, lr, batch_size, n_epochs, seed = seed, verbose = False)
+        all_losses, all_params = MBGD(X_train, y_train, lin_module, mse_loss, optimizer, batch_size = batch_size, nb_epochs = nb_epochs, seed = seed, save_params=True, verbose = False)
+        all_params = [np.array(p).squeeze() for p in all_params]
         
         # Visualization
         plt.subplot(len(batch_sizes), 3, i*3 + 1)

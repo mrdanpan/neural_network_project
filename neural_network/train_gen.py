@@ -3,7 +3,7 @@ from tqdm import tqdm
 
 def MBGD(X_train, y_train, model, loss_class, optimizer, batch_size = 10, nb_epochs = 100, seed = None, verbose = True, save_params = False):
     all_losses = []
-    if save_params: all_params = [model._parameters]
+    if save_params: all_params = [model._parameters.copy()]
     
     for epoch in tqdm(range(nb_epochs)):
         model.zero_grad()
@@ -32,7 +32,7 @@ def MBGD(X_train, y_train, model, loss_class, optimizer, batch_size = 10, nb_epo
             
         # update training metrics 
         all_losses.append(np.mean(epoch_loss))
-        if save_params: all_params.append(model._parameters)
+        if save_params: all_params.append(model._parameters.copy())
         
         if verbose: 
             print(f"Epoch {epoch} Loss: {epoch_loss}")

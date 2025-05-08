@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # Train function
 def train_model(X_train, y_train, model, loss_class, learning_rate, batch_size = 1, n_epochs = 100, seed = None, verbose = True):
     all_losses = []
-    all_params = [model._parameters[0][0]]
+    all_params = [model._parameters[0][0].copy()]
     
     for epoch in range(n_epochs):
         model.zero_grad()
@@ -36,7 +36,7 @@ def train_model(X_train, y_train, model, loss_class, learning_rate, batch_size =
 
         # update parameters
         all_losses.append(np.mean(epoch_loss))
-        all_params.append(model._parameters[0][0])
+        all_params.append(model._parameters[0][0].copy())
         
         if verbose: 
             print("current params", model._parameters)
@@ -45,7 +45,7 @@ def train_model(X_train, y_train, model, loss_class, learning_rate, batch_size =
     return all_losses, all_params
 
 # Initialise data
-def prepare_data(slope, normalize = True, seed = 10):
+def prepare_data(slope, normalize = False, seed = 10):
     np.random.seed(seed)
     X_train = np.linspace(0, 10, 50).reshape(-1, 1)
     y_train = slope * X_train + np.random.normal(size=(X_train.shape), scale=5)
@@ -68,12 +68,13 @@ if __name__ == "__main__":
         batch_size = 1
         seed = 13
         # Obtain data
-        X_train, y_train = prepare_data(slope = 5, normalize = False, seed = seed)
+        X_train, y_train = prepare_data(slope = 5, normalize = True, seed = seed)
         # Initialise model and loss 
         lin_module = Linear(1, 1, seed = seed)
         mse_loss = MSELoss()
         # Train
         all_losses, all_params = train_model(X_train, y_train, lin_module, mse_loss, lr, batch_size, n_epochs, seed = seed, verbose = False)
+        print(all_params[0:5])
         
         # Visualization
         plt.subplot(len(lrs), 3, i*3 + 1)
@@ -110,7 +111,7 @@ if __name__ == "__main__":
         lr = 0.01
         seed = 13
         # Obtain data
-        X_train, y_train = prepare_data(slope = 5, normalize = False, seed = seed)
+        X_train, y_train = prepare_data(slope = 5, normalize = True, seed = seed)
         # Initialise model and loss 
         lin_module = Linear(1, 1, seed = seed)
         mse_loss = MSELoss()
