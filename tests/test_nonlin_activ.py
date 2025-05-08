@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from neural_network.modules import * 
 from neural_network.losses import *
 
+from sklearn.metrics import roc_curve, RocCurveDisplay
+
 # Initialise data
 def prepare_binary_class_data(c1, c2, v1 = 0, v2 = 1, n = 100, normalize = True, seed = 10):
     """Creates binary classification data X and Y, where X ∈ R^n and Y ∈ {v1, v2},
@@ -42,15 +44,19 @@ def split_train_test_data(X, y, perc_test = 0.2, seed = 10):
     
     return X_train, y_train, X_test, y_test
 
-def plot_data(X,y):
-    colors = [('green', i) if i == 0 else ('red', i) for i in y.flatten()]
-    for i in range(len(X.T[0])):  
-        plt.scatter(X.T[0][i], X.T[1][i], c=colors[i][0], label = f'Class {colors[i][1]}')
-    # Make sure only one label per class
-    handles, labels = plt.gca().get_legend_handles_labels()
-    by_label = dict(zip(labels, handles))
-    # Display stuff
-    plt.legend(by_label.values(), by_label.keys())
+def plot_data(TP, FP, TN, FN):
+
+    print(TN)
+    if len(TP) > 0:
+        plt.scatter(TP[:,0], TP[:,1], c='g', label='TP')
+    if len(FP) > 0:
+        plt.scatter(FP[:,0], FP[:,1], c='g', marker='x', label='FP')
+    if len(TN) > 0:
+        plt.scatter(TN[:,0], TN[:,1], c='r', label='TN')
+    if len(FN) > 0:
+        plt.scatter(FN[:,0], FN[:,1], c='r', marker='x', label='FN')
+    
+    plt.legend()#by_label.values(), by_label.keys())
     plt.xlabel("x1"); plt.ylabel("x2")
     plt.title("Data points")
     
@@ -138,12 +144,15 @@ def plot_loss(losses, title = "MSE Loss"):
     plt.xlabel("Epoch")
     plt.ylabel("MSE Loss")
 
-
-def confusion_matrix(X_test, y_test, model, threshold=0.5, proportions = True):
-    #[[TN, FP], [FN, TP]]
-    y_pred = X_test
+def model_score(model, X_in):
+    out = X_in
     for layer in model:
-        y_pred = layer.forward(y_pred)
+        out = layer.forward(out)
+    return out
+
+def confusion_matrix(X_test, y_test, model, threshold=0.5, proportions = True, return_data = False):
+    #[[TN, FP], [FN, TP]]
+    y_pred = model_score(model, X_test)
         
     labels = np.unique(y_test)
 
@@ -151,21 +160,30 @@ def confusion_matrix(X_test, y_test, model, threshold=0.5, proportions = True):
 
     conf_mat = np.zeros((2, 2), dtype=int)  # [[TN, FP], [FN, TP]]
 
-    for y_hat, y_true in zip(y_pred_bin, y_test):
+    tp, fp, tn, fn = [], [], [], []
+
+    for i, (y_hat, y_true) in enumerate(zip(y_pred_bin, y_test)):
         if y_true == labels[1]:
             if y_hat == labels[1]:
                 conf_mat[1, 1] += 1  # TP
+                tp.append(X_test[i])
             else:
                 conf_mat[1, 0] += 1  # FN
+                fn.append(X_test[i])
         else:
             if y_hat == labels[1]:
                 conf_mat[0, 1] += 1  # FP
+                fp.append(X_test[i])
             else:
                 conf_mat[0, 0] += 1  # TN
+                tn.append(X_test[i])
 
     if proportions:
         conf_mat = conf_mat.astype(float)/y_test.shape[0]
-    return conf_mat
+
+    if not return_data:
+        return conf_mat
+    return conf_mat, (tp, fp, tn, fn)
 
 
 def plot_confusion_matrix(conf_mat, title="Confusion Matrix", proportions=True):
@@ -189,44 +207,67 @@ if __name__ == "__main__":
     lr = 0.01
     batch_size = 1
 
+    n_epochs = 10
     # Data preparation
     c1 = [1,2]; c2 = [3,5]
     X, y = prepare_binary_class_data(c1, c2, n = 100, normalize=True, seed = seed)
     X_train, y_train, X_test, y_test = split_train_test_data(X, y, perc_test=.2, seed = seed)
 
-    all_losses_1, model_1 = train_model(X_train, y_train, nb_epochs=2, batch_size=1, lr = lr, seed = seed)
-    print(f'Score for model with 1 training epoch: {score(X_test, y_test, model_1)} ')
-    conf_mat_train = confusion_matrix(X_train, y_train, model_1, proportions=True)
-    conf_mat_test = confusion_matrix(X_test, y_test, model_1, proportions=True)
+    all_losses_1, model_1 = train_model(X_train, y_train, nb_epochs=n_epochs, batch_size=1, lr = lr, seed = seed)
+    print(f'Score for model with {n_epochs} training epochs: {score(X_test, y_test, model_1)} ')
+
+    conf_mat_train, train_tup = confusion_matrix(X_train, y_train, model_1, proportions=True, return_data=True)
+    conf_mat_test, test_tup = confusion_matrix(X_test, y_test, model_1, proportions=True, return_data=True)
+
+    [TP, FP, TN, FN] = [np.array(train_tup[i]+test_tup[i]) for i in range(4)]
     
-    plt.figure(figsize=(20,4))
-    plt.subplot(1,4,1)
-    plot_data(X,y)
-    plt.subplot(1,4,2)
-    plot_loss(all_losses_1,  title = f"Losses for model trained on {2} epochs")
-    plt.subplot(1,4,3)
+    plt.figure(figsize=(8,8))
+    plt.subplot(2,2,1)
+    plot_data(TP, FP, TN, FN)
+    plt.subplot(2,2,2)
+    plot_loss(all_losses_1,  title = f"Losses for model trained on {n_epochs} epochs")
+    plt.subplot(2,2,3)
     plot_confusion_matrix(conf_mat_train, title="Confusion Matrix (Train)", proportions=True)
-    plt.subplot(1,4,4)
+    plt.subplot(2,2,4)
     plot_confusion_matrix(conf_mat_test, title="Confusion Matrix (Test)", proportions=True)
-    plt.suptitle("Training on 2 epochs")
+    plt.suptitle(f'Training on {n_epochs} epochs')
     plt.show()
 
     
-    n_epochs = 1000
-    all_losses_2, model_2= train_model(X_train, y_train, nb_epochs=n_epochs, batch_size=1, lr = lr, seed = seed)
+    n_epochs = 100
+    all_losses_2, model_2 = train_model(X_train, y_train, nb_epochs=n_epochs, batch_size=1, lr = lr, seed = seed)
     print(f'Score for model with {n_epochs} training epochs: {score(X_test, y_test, model_2)} ')
-    conf_mat_train = confusion_matrix(X_train, y_train, model_2, proportions=True)
-    conf_mat_test = confusion_matrix(X_test, y_test, model_2, proportions=True)
+    
+    conf_mat_train, train_tup = confusion_matrix(X_train, y_train, model_2, proportions=True, return_data=True)
+    conf_mat_test, test_tup = confusion_matrix(X_test, y_test, model_2, proportions=True, return_data=True)
 
-    plt.figure(figsize=(20,4))
-    plt.subplot(1,4,1)
-    plot_data(X,y)
-    plt.subplot(1,4,2)
+    [TP, FP, TN, FN] = [np.array(train_tup[i]+test_tup[i]) for i in range(4)]
+
+    plt.figure(figsize=(8,8))
+    plt.subplot(2,2,1)
+    plot_data(TP, FP, TN, FN)
+    plt.subplot(2,2,2)
     plot_loss(all_losses_2,  title = f"Losses for model trained on {n_epochs} epochs")
-    plt.subplot(1,4,3)
+    plt.subplot(2,2,3)
     plot_confusion_matrix(conf_mat_train, title="Confusion Matrix (Train)", proportions=True)
-    plt.subplot(1,4,4)
+    plt.subplot(2,2,4)
     plot_confusion_matrix(conf_mat_test, title="Confusion Matrix (Test)", proportions=True)
-    plt.suptitle("Training on 1000 epochs")
+    plt.suptitle(f'Training on {n_epochs} epochs')
     plt.show()
 
+    # plotting roc curve for test and train
+    print(y_test)
+    figure, axis = plt.subplots(2, 2, figsize=(10, 10))
+    
+    i = 0
+    for m, model in enumerate([model_1, model_2]):
+        y_train_hat = model_score(model, X_train)
+        RocCurveDisplay.from_predictions(y_train, y_train_hat, ax=axis[i, 0])
+        axis[i, 0].set_title(f'Model {m+1} Train ROC curve')
+
+        y_test_hat = model_score(model, X_test)
+        RocCurveDisplay.from_predictions(y_test, y_test, ax=axis[i, 1])
+        axis[i, 1].set_title(f'Model {m+1} Test ROC curve')
+        i += 1
+
+    plt.show()
