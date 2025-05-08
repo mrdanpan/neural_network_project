@@ -204,12 +204,12 @@ def plot_confusion_matrix(conf_mat, title="Confusion Matrix", proportions=True):
 if __name__ == "__main__":
     # Hyperparams 
     seed = 10
-    lr = 0.01
+    lr = 0.001
     batch_size = 1
 
     n_epochs = 10
     # Data preparation
-    c1 = [1,2]; c2 = [3,5]
+    c1 = [3,3]; c2 = [3.5,4.5]
     X, y = prepare_binary_class_data(c1, c2, n = 100, normalize=True, seed = seed)
     X_train, y_train, X_test, y_test = split_train_test_data(X, y, perc_test=.2, seed = seed)
 

@@ -50,12 +50,12 @@ hidden1_num_neurons = 256
 hidden2_num_neurons = 16
 autoencoder = Sequential([
                         # Encoder
-                        Linear(num_pixels, hidden1_num_neurons), TanH(), 
-                        Linear(hidden1_num_neurons, hidden2_num_neurons), TanH(),
+                        Linear(num_pixels, hidden1_num_neurons, weight_initialisation="He"), TanH(), 
+                        Linear(hidden1_num_neurons, hidden2_num_neurons, weight_initialisation="He"), TanH(),
                         
                         # Decoder
-                        Linear(hidden2_num_neurons, hidden1_num_neurons), TanH(), 
-                        Linear(hidden1_num_neurons,num_pixels), Sigmoid()
+                        Linear(hidden2_num_neurons, hidden1_num_neurons, weight_initialisation="He"), TanH(), 
+                        Linear(hidden1_num_neurons,num_pixels, weight_initialisation="He"), Sigmoid()
                         ])
 
 class Autoencoder(nn.Module):

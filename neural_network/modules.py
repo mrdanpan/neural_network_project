@@ -32,14 +32,18 @@ class Module(object):
     
 # Linear Module
 class Linear(Module):
-    def __init__(self, _input, _output, seed = None):
+    def __init__(self, _input, _output, seed = None, weight_initialisation = 'regular'):
         self._input = _input
         self._output = _output
         if seed is not None: np.random.seed(seed)
-        # self._parameters = np.random.randn(_input, _output) * 0.01
-        bound = np.sqrt(6. / _input) # He initialisation
-        self._parameters = np.random.uniform(-bound, bound, (_input, _output))
-
+        if weight_initialisation == 'regular':
+            self._parameters = np.random.randn(_input, _output) * 0.01
+        elif weight_initialisation == 'He':
+            bound = np.sqrt(6. / _input)
+            self._parameters = np.random.uniform(-bound, bound, (_input, _output))
+        else:
+            self._parameters = np.random.randn(_input, _output) 
+            
     def zero_grad(self):
         self._gradient = np.zeros(self._parameters.shape)
     
