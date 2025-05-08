@@ -37,7 +37,8 @@ class Linear(Module):
         self._output = _output
         if seed is not None: np.random.seed(seed)
         # self._parameters = np.random.randn(_input, _output) * 0.01
-        self._parameters = np.random.randn(_input, _output) * np.sqrt(2. / (_input + _output))
+        bound = np.sqrt(6. / _input) # He initialisation
+        self._parameters = np.random.uniform(-bound, bound, (_input, _output))
 
     def zero_grad(self):
         self._gradient = np.zeros(self._parameters.shape)

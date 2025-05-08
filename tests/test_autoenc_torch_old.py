@@ -115,6 +115,27 @@ def plot_autoenc_preds(autoencoder, X_test, nb_epochs):
     plt.savefig(f"{autoenc_dir}/model_preds_{nb_epochs}epochs.jpg")
 
 model = Autoencoder()
+
+weights_path = 'tests/autoencoder_results/784_256_16_lr5e-1_bs2048_ds10k_1/autoencoder_params_MSE_epoch0.pkl'
+with open(weights_path, 'rb') as f:
+    weights = pickle.load(f)
+with torch.no_grad():
+    # encoder.0
+    if weights[0] is not None:
+        model.encoder[0].weight.copy_(torch.tensor(weights[0].T, dtype=torch.float32))
+
+    # encoder.2
+    if weights[2] is not None:
+        model.encoder[2].weight.copy_(torch.tensor(weights[2].T, dtype=torch.float32))
+
+    # decoder.0
+    if weights[4] is not None:
+        model.decoder[0].weight.copy_(torch.tensor(weights[4].T, dtype=torch.float32))
+
+    # decoder.2
+    if weights[6] is not None:
+        model.decoder[2].weight.copy_(torch.tensor(weights[6].T, dtype=torch.float32))
+        
 loss_fn = torch.nn.MSELoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=0.5)
 

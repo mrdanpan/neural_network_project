@@ -34,8 +34,6 @@ custom_transform = transforms.Compose([
 dataset = FashionMNIST(root='./data', download=True, transform=custom_transform)
 small_dataset = Subset(dataset, range(10000))
 
-
-## MODULES
 X, y = zip(*[small_dataset[i] for i in range(len(small_dataset))])
 X = np.array([np.matrix.flatten(x.numpy().astype(np.float32)) for x in X])
 
@@ -79,7 +77,15 @@ autoencoder = Sequential([
 plot_autoenc_preds(autoencoder, X_test, nb_epochs=0)
 loss = MSELoss()
 optim = Optim(autoencoder, loss, eps=5e-1)
-n_epochs = 750
+n_epochs = 2000
+with open(f'{autoenc_dir}/autoencoder_params_MSE_epoch0.pkl', 'wb') as f:
+        pickle.dump(autoencoder._parameters, f)
+        
+plt.figure()
+pred = autoencoder.forward(X_test[0])
+plt.imshow(pred.reshape(28,28))
+plt.show()
+exit()
 all_losses, all_params = MBGD(X_train, X_train, autoencoder, loss, optim, batch_size = 2048, nb_epochs = n_epochs, seed = None, verbose = False, save_params = True)
 
 # Save parameters

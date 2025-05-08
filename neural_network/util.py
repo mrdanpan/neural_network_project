@@ -4,10 +4,10 @@ def sigmoid(X):
     return 1 / (1 + np.exp(-X))
 
 def tanh(X, eps = 1e-8):
-
-    X_clip = np.clip(2*X, -50, 50)
-    tanh = (np.e ** (X_clip - 1)) / (np.e ** (X_clip + eps) + 1) 
-    return tanh
+    return np.tanh(X)
+    # X_clip = np.clip(2*X, -50, 50)
+    # tanh = (np.e ** (X_clip - 1)) / (np.e ** (X_clip + eps) + 1) 
+    # return tanh
 
 def softmax(X):
     D = -np.max(X, axis = 1).reshape(-1,1) # Coeff to help with stability of softmax
