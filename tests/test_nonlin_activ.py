@@ -22,8 +22,8 @@ def prepare_binary_class_data(c1, c2, v1 = 0, v2 = 1, n = 100, normalize = True,
     assert (v1 in [-1,0]) and (v2 in [1]), f"Expected v1 in [-1, 0], v2 in [1], got v1 = {v1}, v2 = {v2}"
     rng = np.random.default_rng(seed = seed) if seed is not None else np.random.default_rng()
     
-    X_c1 = (np.array([c1 for i in range(n)]).T + rng.normal(size = (len(c1), n))).T
-    X_c2 = (np.array([c2 for i in range(n)]).T + rng.normal(size = (len(c2), n))).T
+    X_c1 = (np.array([c1 for _ in range(n)]).T + rng.normal(size = (len(c1), n))).T
+    X_c2 = (np.array([c2 for _ in range(n)]).T + rng.normal(size = (len(c2), n))).T
     y_c1 = np.array(n * [v1]); y_c2 = np.array(n * [v2])
     
     X = np.concatenate((X_c1, X_c2))
@@ -56,7 +56,7 @@ def plot_data(TP, FP, TN, FN):
     if len(FN) > 0:
         plt.scatter(FN[:,0], FN[:,1], c='r', marker='x', label='FN')
     
-    plt.legend()#by_label.values(), by_label.keys())
+    plt.legend()
     plt.xlabel("x1"); plt.ylabel("x2")
     plt.title("Data points")
     
@@ -207,7 +207,7 @@ if __name__ == "__main__":
     lr = 0.001
     batch_size = 1
 
-    n_epochs = 10
+    n_epochs = 20
     # Data preparation
     c1 = [3,3]; c2 = [3.5,4.5]
     X, y = prepare_binary_class_data(c1, c2, n = 100, normalize=True, seed = seed)
@@ -231,6 +231,7 @@ if __name__ == "__main__":
     plt.subplot(2,2,4)
     plot_confusion_matrix(conf_mat_test, title="Confusion Matrix (Test)", proportions=True)
     plt.suptitle(f'Training on {n_epochs} epochs')
+    plt.savefig(f'tests/figs/nonlin_{n_epochs}_epochs.png')
     plt.show()
 
     n_epochs = 1000
@@ -252,6 +253,7 @@ if __name__ == "__main__":
     plt.subplot(2,2,4)
     plot_confusion_matrix(conf_mat_test, title="Confusion Matrix (Test)", proportions=True)
     plt.suptitle(f'Training on {n_epochs} epochs')
+    plt.savefig(f'tests/figs/nonlin_{n_epochs}_epochs.png')
     plt.show()
 
     # plotting roc curve for test and train
