@@ -46,13 +46,17 @@ assert np.allclose(X_test_torch, X_test_np)
 ## % 
 num_pixels = np.matrix.flatten(X_train_np[0]).shape[0] # 786
 hidden1_num_neurons = 256
-hidden2_num_neurons = 2
+hidden2_num_neurons = 64
+hidden3_num_neurons = 2
+
 autoencoder = Sequential([
                         # Encoder
                         Linear(num_pixels, hidden1_num_neurons, weight_initialisation="He"), TanH(), 
                         Linear(hidden1_num_neurons, hidden2_num_neurons, weight_initialisation="He"), TanH(),
+                        Linear(hidden2_num_neurons, hidden3_num_neurons, weight_initialisation="He"), TanH(),
                         
                         # Decoder
+                        Linear(hidden3_num_neurons, hidden2_num_neurons, weight_initialisation="He"), TanH(),
                         Linear(hidden2_num_neurons, hidden1_num_neurons, weight_initialisation="He"), TanH(), 
                         Linear(hidden1_num_neurons,num_pixels, weight_initialisation="He"), Sigmoid()
                         ])
@@ -61,15 +65,19 @@ class Autoencoder(nn.Module):
     def __init__(self):
         super(Autoencoder, self).__init__()
         self.encoder = nn.Sequential(
-            nn.Linear(784, 256, bias = False),
+            nn.Linear(num_pixels, hidden1_num_neurons, bias = False),
             nn.Tanh(),
-            nn.Linear(256, 2, bias = False),
+            nn.Linear(hidden1_num_neurons, hidden2_num_neurons, bias = False),
+            nn.Tanh(),
+            nn.Linear(hidden2_num_neurons, hidden3_num_neurons, bias = False),
             nn.Tanh(),
         )
         self.decoder = nn.Sequential(
-            nn.Linear(2, 256, bias = False),
+            nn.Linear(hidden3_num_neurons, hidden2_num_neurons, bias = False),
             nn.Tanh(),
-            nn.Linear(256, 784, bias = False),
+            nn.Linear(hidden2_num_neurons, hidden1_num_neurons, bias = False),
+            nn.Tanh(),
+            nn.Linear(hidden1_num_neurons, num_pixels, bias = False),
             nn.Sigmoid()  
         )
 
@@ -96,13 +104,22 @@ with torch.no_grad():
 
     # decoder.0
     if weights[4] is not None:
-        autoencoder_torch.decoder[0].weight.copy_(torch.tensor(weights[4].T, dtype=torch.float32))
+        autoencoder_torch.encoder[4].weight.copy_(torch.tensor(weights[4].T, dtype=torch.float32))
         autoencoder.modules[4]._parameters = weights[4]
 
     # decoder.2
     if weights[6] is not None:
-        autoencoder_torch.decoder[2].weight.copy_(torch.tensor(weights[6].T, dtype=torch.float32))
+        autoencoder_torch.decoder[0].weight.copy_(torch.tensor(weights[6].T, dtype=torch.float32))
         autoencoder.modules[6]._parameters = weights[6]
+        
+    if weights[8] is not None:
+        autoencoder_torch.decoder[2].weight.copy_(torch.tensor(weights[8].T, dtype=torch.float32))
+        autoencoder.modules[8]._parameters = weights[8]
+        
+    if weights[10] is not None:
+        autoencoder_torch.decoder[4].weight.copy_(torch.tensor(weights[10].T, dtype=torch.float32))
+        autoencoder.modules[10]._parameters = weights[10]
+
 
 def compare_weights(model_weights, file_weights, layer_name):
     if file_weights is not None:
@@ -114,8 +131,11 @@ def compare_weights(model_weights, file_weights, layer_name):
 # Perform comparisons
 compare_weights(autoencoder_torch.encoder[0].weight.data, weights[0], "encoder[0]")
 compare_weights(autoencoder_torch.encoder[2].weight.data, weights[2], "encoder[2]")
-compare_weights(autoencoder_torch.decoder[0].weight.data, weights[4], "decoder[0]")
-compare_weights(autoencoder_torch.decoder[2].weight.data, weights[6], "decoder[2]")
+compare_weights(autoencoder_torch.encoder[4].weight.data, weights[4], "encoder[4]")
+
+compare_weights(autoencoder_torch.decoder[0].weight.data, weights[6], "decoder[0]")
+compare_weights(autoencoder_torch.decoder[2].weight.data, weights[8], "decoder[2]")
+compare_weights(autoencoder_torch.decoder[4].weight.data, weights[10], "decoder[4]")
 
 # Save dataset images
 for i in range(16):

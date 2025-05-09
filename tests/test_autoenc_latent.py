@@ -74,13 +74,17 @@ if __name__ == "__main__":
 
     num_pixels = np.matrix.flatten(X_train_np[0]).shape[0] # 786
     hidden1_num_neurons = 256
-    hidden2_num_neurons = 2
+    hidden2_num_neurons = 64
+    hidden3_num_neurons = 2
+
     autoencoder = Sequential([
                             # Encoder
                             Linear(num_pixels, hidden1_num_neurons, weight_initialisation="He"), TanH(), 
                             Linear(hidden1_num_neurons, hidden2_num_neurons, weight_initialisation="He"), TanH(),
+                            Linear(hidden2_num_neurons, hidden3_num_neurons, weight_initialisation="He"), TanH(),
                             
                             # Decoder
+                            Linear(hidden3_num_neurons, hidden2_num_neurons, weight_initialisation="He"), TanH(),
                             Linear(hidden2_num_neurons, hidden1_num_neurons, weight_initialisation="He"), TanH(), 
                             Linear(hidden1_num_neurons,num_pixels, weight_initialisation="He"), Sigmoid()
                             ])

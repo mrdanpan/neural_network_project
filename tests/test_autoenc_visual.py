@@ -33,6 +33,7 @@ X, Y = zip(*[small_dataset[i] for i in range(len(small_dataset))])
 X_np = np.array([x.numpy().flatten().astype(np.float32) for x in X])  
 y_np = np.array([y for y in Y])
 
+
 train_idx, test_idx = get_split_indices(X, perc_test=0.2, seed=10)
 X_train_np, X_test_np = X_np[train_idx], X_np[test_idx]
 _, y_test_np = y_np[train_idx], y_np[test_idx]
