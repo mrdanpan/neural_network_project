@@ -4,4 +4,4 @@
 *.pyc
 neural_network/__pycache__/*
 /data
-/tests/autoencoder_results/*
+/tests/autoencoder_results/*/*.pkl

@@ -69,14 +69,12 @@ def score_tensor(X_test, y_test, model):
     return num_correct / len(X_test)
 
 # Hyperparams 
-seed = 42
+seed = 10
 lr = 0.001
 batch_size = 1
 # Data preparation
 c1 = [1,2]; c2 = [3,5]
-X, y = prepare_binary_class_data(c1, c2, n = 100, normalize=True, seed = seed)
-plt.scatter(X[:,0], X[:,1])
-plt.show()
+X, y = prepare_binary_class_data(c2, c1, v1=0, v2 = 1, n = 100, normalize=True, seed = seed)
 X_train, y_train, X_test, y_test = split_train_test_data(X, y, perc_test=.2, seed = seed)
 # plot_data(X,y)
 
@@ -86,12 +84,11 @@ model_2 = Sequential([Linear(2, 4, seed = seed), TanH(), Linear(4, 1, seed = see
 W1_np = model_2._parameters[0].copy()
 W2_np = model_2._parameters[2].copy()
 
-n_epochs = 0
+n_epochs = 10
 mse_class = MSELoss()
 all_losses_1 = train_model(X_train, y_train, model_1, loss_class=mse_class, learning_rate = lr, batch_size=batch_size, nb_epochs=n_epochs, seed = seed, verbose = False)
 print(f'Score for model with {n_epochs} training epochs: {score(X_test, y_test, model_1)} ')
-
-n_epochs = 100
+n_epochs = 200
 print(f"Params before training model (for {n_epochs} epochs)")
 print("Lin1: ", model_2._parameters[0])
 print("Lin2: ", model_2._parameters[2])
@@ -138,7 +135,7 @@ def train(X_train, y_train, batch_size, model, loss_fn, optim, nb_epochs, seed =
         all_losses.append(epoch_loss.item())
     return all_losses
 
-seed = 42
+seed = 10
 lr = 0.001
 batch_size = 1
 torch.manual_seed(seed)
@@ -162,12 +159,12 @@ X_test = torch.from_numpy(X_test); y_test = torch.from_numpy(y_test).to(torch.fl
 print()
 print("TORCH MODEL:")
 
-n_epochs = 0
+n_epochs = 10
 
 all_losses = train(X_train, y_train, batch_size, net, loss_fn = loss, optim = optim, nb_epochs = n_epochs, seed = 10)
 print(f'Score for model with {n_epochs} training epoch: {score_tensor(X_test, y_test, net)} ')
 
-n_epochs = 100
+n_epochs = 200
 
 net2 = torch.nn.Sequential(
     torch.nn.Linear(2,4, dtype=torch.float64, bias = False),
