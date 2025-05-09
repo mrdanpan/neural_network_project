@@ -9,7 +9,6 @@ from neural_network.train_gen import *
 from tqdm import tqdm
 from torchvision.datasets import FashionMNIST
 import torch.nn as nn
-import torch.nn.functional as F
 from torchvision import transforms
 from torch.utils.data import DataLoader, TensorDataset
 from torch.utils.data import Subset
@@ -80,10 +79,9 @@ class Autoencoder(nn.Module):
         return x
 autoencoder_torch = Autoencoder()
 
-weights_path = 'tests/autoencoder_results/784_256_16_lr5e-1_bs2048_ds10k_1/autoencoder_params_MSE_epoch0.pkl'
-with open(weights_path, 'rb') as f:
-    weights = pickle.load(f)
-
+weights = autoencoder._parameters
+with open(f'{autoenc_dir}/autoencoder_params_MSE_epoch0_torch.pkl', 'wb') as f:
+    pickle.dump(weights, f)
 
 with torch.no_grad():
     # encoder.0
@@ -105,7 +103,6 @@ with torch.no_grad():
     if weights[6] is not None:
         autoencoder_torch.decoder[2].weight.copy_(torch.tensor(weights[6].T, dtype=torch.float32))
         autoencoder.modules[6]._parameters = weights[6]
-
 
 def compare_weights(model_weights, file_weights, layer_name):
     if file_weights is not None:
@@ -137,7 +134,7 @@ plt.savefig(im_f)
 # Preliminary predictions
 pred_torch = autoencoder_torch(X_test_torch[0].unsqueeze(0))
 pred_np = torch.tensor(autoencoder.forward(X_test_np[0]), dtype = torch.float32)
-print(torch.allclose(pred_np, pred_torch))
+assert(torch.allclose(pred_np, pred_torch))
 
 plt.figure(figsize=(8,3))
 plt.subplot(1,2,1)
@@ -175,14 +172,13 @@ def plot_autoenc_preds(autoencoder, X_test, nb_epochs, is_torch = False):
 plot_autoenc_preds(autoencoder, X_test_np, nb_epochs=0, is_torch = False)
 plot_autoenc_preds(autoencoder_torch, X_test_torch, nb_epochs=0, is_torch = True)
 
-
 # TRAIN MODELS
 loss = MSELoss()
 optim = Optim(autoencoder, loss, eps=5e-1)
 n_epochs = 2000
 all_losses, all_params = MBGD(X_train_np, X_train_np, autoencoder, loss, optim, batch_size = 2048, nb_epochs = n_epochs, seed=10, verbose = False, save_params = True)
 # Save parameters
-with open(f'{autoenc_dir}/autoencoder_params_MSE_epoch{len(all_params)}.pkl', 'wb') as f:
+with open(f'{autoenc_dir}/autoencoder_params_MSE_epoch{len(all_params)-1}.pkl', 'wb') as f:
     pickle.dump(all_params[-1], f)
 
 plt.figure(figsize=(8,8))
@@ -244,7 +240,7 @@ all_losses, all_params = train_MBGD(autoencoder_torch, X_train_torch, loss_fn, o
                                     batch_size=2048, nb_epochs=n_epochs,
                                     seed=10, verbose=False, save_params=True)
 
-with open(f'{autoenc_dir}/autoencoder_params_MSE_epoch{len(all_params)}_torch.pkl', 'wb') as f:
+with open(f'{autoenc_dir}/autoencoder_params_MSE_epoch{len(all_params)-1}_torch.pkl', 'wb') as f:
     pickle.dump(all_params[-1], f)
 
 plt.figure(figsize=(8,8))

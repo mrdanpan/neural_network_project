@@ -62,12 +62,6 @@ y_train_onehot[np.arange(y_train.shape[0]), y_train] = 1
 y_test_onehot = np.zeros(shape = (np.array(y_test).shape[0],10))
 y_test_onehot[np.arange(y_test.shape[0]), y_test] = 1
 
-# print(y_test_onehot[3])
-# print(np.argmax(y_test_onehot[3]))
-# plt.imshow(X_test[3].reshape(28,28))
-# plt.show()
-
-# exit()
 
 # Function for quality check
 def show_model_pred(X_test, y_test_onehot, nb_epochs, save_path = None):
@@ -77,9 +71,6 @@ def show_model_pred(X_test, y_test_onehot, nb_epochs, save_path = None):
     for i, (image, pred) in enumerate(zip(X_test[range_min:range_max], preds)):
         true_label = np.argmax(y_test_onehot[range_min + i])
         
-        print(y_test_onehot[range_min + i])
-        print(pred)
-        print()
         
         plt.subplot(5, 2, i*2 + 1)
         plt.imshow(image.reshape(28,28), cmap = 'grey')
@@ -103,7 +94,7 @@ def show_model_pred(X_test, y_test_onehot, nb_epochs, save_path = None):
     plt.show()
     
 # Model training
-model = Sequential([Linear(28 * 28, 100), Sigmoid(), Linear(100, 10), SoftMax()])
+model = Sequential([Linear(28 * 28, 100, weight_initialisation='He'), Sigmoid(), Linear(100, 10, weight_initialisation='He'), SoftMax()])
 loss = CrossEntropy()
 optim = Optim(model, loss, eps = 1e-4)
 
