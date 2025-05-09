@@ -37,13 +37,14 @@ def MBGD(X_train, y_train, model, loss_class, optimizer, batch_size = 10, nb_epo
         if verbose: 
             print(f"Epoch {epoch} Loss: {epoch_loss}")
     if save_params: return all_losses, all_params
-    else: return all_losses
+    return all_losses
     
 
 # Note: this is the same thing as doing MBGD with batch_size = 1. 
-def SGD(X_train, y_train, model, loss_class, optimizer, nb_epochs = 100, batch_size = 1, seed = None, verbose = True):
+def SGD(X_train, y_train, model, loss_class, optimizer, nb_epochs = 100, seed = None, save_params = False, verbose = True):
     
     all_losses = []
+    if save_params: all_params = [model._parameters.copy()]
     
     for epoch in range(nb_epochs):
         model.zero_grad()
@@ -64,8 +65,10 @@ def SGD(X_train, y_train, model, loss_class, optimizer, nb_epochs = 100, batch_s
         optimizer.step(X, y)
         # update training metrics 
         all_losses.append(np.mean(epoch_loss))
+        if save_params: all_params.append(model._parameters.copy())
         
         if verbose: 
             print(f"Epoch {epoch} Loss: {epoch_loss}")
 
+    if save_params: return all_losses, all_params
     return all_losses

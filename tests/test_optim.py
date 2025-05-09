@@ -41,7 +41,7 @@ def train_model(X_train, y_train, model, loss_class, optimizer, batch_size = 1, 
     return all_losses
 
 # Hyperparams 
-nb_epochs = 200
+nb_epochs = 50
 batch_size = 1
 seed = 13
 lr = 0.01
@@ -113,7 +113,5 @@ plt.legend()
 plt.xlim([-2,2]); plt.ylim([-2,2])
 plt.title(f"Linear Regression against Training Data (with Optim)")
 
+plt.savefig('tests/figs/test_optim.png')
 plt.show()
-        
-        
-

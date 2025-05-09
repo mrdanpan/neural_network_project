@@ -7,8 +7,7 @@ import matplotlib.pyplot as plt
 
 # Test linear to see if things are the same:
 from test_linear import (
-    prepare_data,
-    train_model,
+    prepare_data
 )
 
 if __name__ == "__main__":
@@ -40,7 +39,7 @@ if __name__ == "__main__":
         mse_loss = MSELoss()
         optimizer = Optim(lin_module, mse_loss, lr)
         # Train
-        all_losses, all_params = MBGD(X_train, y_train, lin_module, mse_loss, optimizer, batch_size = batch_size, nb_epochs = nb_epochs, seed = seed, save_params=True, verbose = False)
+        all_losses, all_params = SGD(X_train, y_train, lin_module, mse_loss, optimizer, nb_epochs = nb_epochs, seed = seed, save_params=True, verbose = False)
         all_params = [np.array(p).squeeze() for p in all_params]
         print(all_params[0:5])
         
@@ -85,7 +84,7 @@ if __name__ == "__main__":
         mse_loss = MSELoss()
         optimizer = Optim(lin_module, mse_loss, lr)
         # Train
-        all_losses, all_params = MBGD(X_train, y_train, lin_module, mse_loss, optimizer, batch_size = batch_size, nb_epochs = nb_epochs, seed = seed, save_params=True, verbose = False)
+        all_losses, all_params = SGD(X_train, y_train, lin_module, mse_loss, optimizer, nb_epochs = nb_epochs, seed = seed, save_params=True, verbose = False)
         all_params = [np.array(p).squeeze() for p in all_params]
         
         # Visualization
