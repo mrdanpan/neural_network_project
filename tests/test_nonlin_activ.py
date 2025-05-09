@@ -121,7 +121,7 @@ def train_model(X_train, y_train, nb_epochs, batch_size, lr, seed = 10):
             sig.update_parameters(lr)
             
         # append metric stats 
-        all_losses.append(np.mean(epoch_loss).item())
+        all_losses.append(epoch_loss)
 
     return all_losses, model 
 
@@ -135,7 +135,6 @@ def score(X_test, y_test, model):
         y_pred = 0 if X.item() < 0.5 else 1 
         if y_pred == y: num_correct += 1 
     return num_correct / len(X_test)
-
 
 def plot_loss(losses, title = "MSE Loss"):
     plt.plot(losses)
@@ -184,7 +183,6 @@ def confusion_matrix(X_test, y_test, model, threshold=0.5, proportions = True, r
         return conf_mat
     return conf_mat, (tp, fp, tn, fn)
 
-
 def plot_confusion_matrix(conf_mat, title="Confusion Matrix", proportions=True):
     plt.imshow(conf_mat, cmap='viridis')
     plt.title(title)
@@ -206,10 +204,10 @@ if __name__ == "__main__":
     lr = 0.001
     batch_size = 1
 
-    n_epochs = 20
+    n_epochs = 10
     # Data preparation
     c1 = [1,2]; c2 = [3,5]
-    X, y = prepare_binary_class_data(c1, c2, n = 100, normalize=True, seed = seed)
+    X, y = prepare_binary_class_data(c2, c1, v1 = 0, v2 = 1, n = 100, normalize=True, seed = seed)
     X_train, y_train, X_test, y_test = split_train_test_data(X, y, perc_test=.2, seed = seed)
 
     all_losses_1, model_1 = train_model(X_train, y_train, nb_epochs=n_epochs, batch_size=1, lr = lr, seed = seed)
@@ -233,7 +231,7 @@ if __name__ == "__main__":
     plt.savefig(f'tests/figs/nonlin_{n_epochs}_epochs.png')
     plt.show()
 
-    n_epochs = 100
+    n_epochs = 200
     all_losses_2, model_2= train_model(X_train, y_train, nb_epochs=n_epochs, batch_size=1, lr = lr, seed = seed)
     print(f'Score for model with {n_epochs} training epochs: {score(X_test, y_test, model_2)} ')
     
@@ -255,18 +253,18 @@ if __name__ == "__main__":
     plt.savefig(f'tests/figs/nonlin_{n_epochs}_epochs.png')
     plt.show()
 
-    # plotting roc curve for test and train
-    figure, axis = plt.subplots(2, 2, figsize=(10, 10))
+    # # plotting roc curve for test and train
+    # figure, axis = plt.subplots(2, 2, figsize=(10, 10))
     
-    i = 0
-    for m, model in enumerate([model_1, model_2]):
-        y_train_hat = model_score(model, X_train)
-        RocCurveDisplay.from_predictions(y_train, y_train_hat, ax=axis[i, 0])
-        axis[i, 0].set_title(f'Model {m+1} Train ROC curve')
+    # i = 0
+    # for m, model in enumerate([model_1, model_2]):
+    #     y_train_hat = model_score(model, X_train)
+    #     RocCurveDisplay.from_predictions(y_train, y_train_hat, ax=axis[i, 0])
+    #     axis[i, 0].set_title(f'Model {m+1} Train ROC curve')
 
-        y_test_hat = model_score(model, X_test)
-        RocCurveDisplay.from_predictions(y_test, y_test, ax=axis[i, 1])
-        axis[i, 1].set_title(f'Model {m+1} Test ROC curve')
-        i += 1
+    #     y_test_hat = model_score(model, X_test)
+    #     RocCurveDisplay.from_predictions(y_test, y_test, ax=axis[i, 1])
+    #     axis[i, 1].set_title(f'Model {m+1} Test ROC curve')
+    #     i += 1
 
-    plt.show()
+    # plt.show()

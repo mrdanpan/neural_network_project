@@ -37,7 +37,7 @@ class Linear(Module):
         self._output = _output
         if seed is not None: np.random.seed(seed)
         if weight_initialisation == 'regular':
-            self._parameters = np.random.randn(_input, _output) * 0.01
+            self._parameters = np.random.randn(_input, _output) 
         elif weight_initialisation == 'He':
             bound = np.sqrt(6. / _input)
             self._parameters = np.random.uniform(-bound, bound, (_input, _output))
