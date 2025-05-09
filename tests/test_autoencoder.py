@@ -46,7 +46,7 @@ assert np.allclose(X_test_torch, X_test_np)
 ## % 
 num_pixels = np.matrix.flatten(X_train_np[0]).shape[0] # 786
 hidden1_num_neurons = 256
-hidden2_num_neurons = 16
+hidden2_num_neurons = 2
 autoencoder = Sequential([
                         # Encoder
                         Linear(num_pixels, hidden1_num_neurons, weight_initialisation="He"), TanH(), 
@@ -63,11 +63,11 @@ class Autoencoder(nn.Module):
         self.encoder = nn.Sequential(
             nn.Linear(784, 256, bias = False),
             nn.Tanh(),
-            nn.Linear(256, 16, bias = False),
+            nn.Linear(256, 2, bias = False),
             nn.Tanh(),
         )
         self.decoder = nn.Sequential(
-            nn.Linear(16, 256, bias = False),
+            nn.Linear(2, 256, bias = False),
             nn.Tanh(),
             nn.Linear(256, 784, bias = False),
             nn.Sigmoid()  
@@ -80,7 +80,7 @@ class Autoencoder(nn.Module):
 autoencoder_torch = Autoencoder()
 
 weights = autoencoder._parameters
-with open(f'{autoenc_dir}/autoencoder_params_MSE_epoch0_torch.pkl', 'wb') as f:
+with open(f'{autoenc_dir}/autoencoder_params_MSE_epoch0.pkl', 'wb') as f:
     pickle.dump(weights, f)
 
 with torch.no_grad():
