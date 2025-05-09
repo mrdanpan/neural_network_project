@@ -68,7 +68,7 @@ if __name__ == "__main__":
         batch_size = 1
         seed = 13
         # Obtain data
-        X_train, y_train = prepare_data(slope = 5, normalize = False, seed = seed)
+        X_train, y_train = prepare_data(slope = 5, normalize = True, seed = seed)
         # Initialise model and loss 
         lin_module = Linear(1, 1, seed = seed)
         mse_loss = MSELoss()
@@ -110,7 +110,7 @@ if __name__ == "__main__":
         lr = 0.01
         seed = 13
         # Obtain data
-        X_train, y_train = prepare_data(slope = 5, normalize = False, seed = seed)
+        X_train, y_train = prepare_data(slope = 5, normalize = True, seed = seed)
         # Initialise model and loss 
         lin_module = Linear(1, 1, seed = seed)
         mse_loss = MSELoss()

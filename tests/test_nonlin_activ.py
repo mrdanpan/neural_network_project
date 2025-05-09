@@ -46,7 +46,6 @@ def split_train_test_data(X, y, perc_test = 0.2, seed = 10):
 
 def plot_data(TP, FP, TN, FN):
 
-    print(TN)
     if len(TP) > 0:
         plt.scatter(TP[:,0], TP[:,1], c='g', label='TP')
     if len(FP) > 0:
@@ -209,7 +208,7 @@ if __name__ == "__main__":
 
     n_epochs = 20
     # Data preparation
-    c1 = [3,3]; c2 = [3.5,4.5]
+    c1 = [1,2]; c2 = [3,5]
     X, y = prepare_binary_class_data(c1, c2, n = 100, normalize=True, seed = seed)
     X_train, y_train, X_test, y_test = split_train_test_data(X, y, perc_test=.2, seed = seed)
 
@@ -234,7 +233,7 @@ if __name__ == "__main__":
     plt.savefig(f'tests/figs/nonlin_{n_epochs}_epochs.png')
     plt.show()
 
-    n_epochs = 1000
+    n_epochs = 100
     all_losses_2, model_2= train_model(X_train, y_train, nb_epochs=n_epochs, batch_size=1, lr = lr, seed = seed)
     print(f'Score for model with {n_epochs} training epochs: {score(X_test, y_test, model_2)} ')
     
@@ -257,7 +256,6 @@ if __name__ == "__main__":
     plt.show()
 
     # plotting roc curve for test and train
-    print(y_test)
     figure, axis = plt.subplots(2, 2, figsize=(10, 10))
     
     i = 0
