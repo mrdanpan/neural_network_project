@@ -2,7 +2,7 @@ import path_config
 from neural_network.modules import *
 from neural_network.losses import *
 from neural_network.optim import *
-from neural_network.train_gen import MBGD
+from neural_network.train_gen import SGD
 from neural_network.util import *
 import numpy as np 
 import torch
@@ -99,7 +99,7 @@ loss = CrossEntropy()
 optim = Optim(model, loss, eps = 1e-4)
 
 show_model_pred(X_test, y_test_onehot, nb_epochs=0, save_path='tests/figs/')
-all_losses = MBGD(X_train, y_train_onehot, model, loss, optim, batch_size = 100, nb_epochs = 500, seed = 10)
+all_losses = SGD(X_train, y_train_onehot, model, loss, optim, batch_size = 100, nb_epochs = 500, seed = 10)
 show_model_pred(X_test, y_test_onehot, nb_epochs=500, save_path='tests/figs/')
 
 
