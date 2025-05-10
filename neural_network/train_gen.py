@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 import copy
 
-def MBGD(X_train, y_train, model, loss_class, optimizer, batch_size = 10, nb_epochs = 100, seed = None, verbose = True, save_params = False):
+def SGD(X_train, y_train, model, loss_class, optimizer, batch_size = 10, nb_epochs = 100, seed = None, verbose = True, save_params = False):
     all_losses = []
     if save_params: all_params = [copy.deepcopy(model._parameters)]
     
@@ -37,39 +37,5 @@ def MBGD(X_train, y_train, model, loss_class, optimizer, batch_size = 10, nb_epo
         
         if verbose: 
             print(f"Epoch {epoch} Loss: {epoch_loss}")
-    if save_params: return all_losses, all_params
-    return all_losses
-    
-
-# Note: this is the same thing as doing MBGD with batch_size = 1. 
-def SGD(X_train, y_train, model, loss_class, optimizer, nb_epochs = 100, seed = None, save_params = False, verbose = True):
-    
-    all_losses = []
-    if save_params: all_params = [model._parameters.copy()]
-    
-    for epoch in range(nb_epochs):
-        model.zero_grad()
-        epoch_loss = 0
-        
-        # In SGD, we pick one example out of the training set 
-        if seed is not None:
-            np.random.seed(seed + epoch)
-        idx = np.random.randint(0, len(X_train))
-        X, y = X_train[idx], y_train[idx]
-
-        # forward
-        y_pred = model.forward(X)
-        loss = loss_class.forward(y, y_pred)
-        epoch_loss += loss
-
-        # backward
-        optimizer.step(X, y)
-        # update training metrics 
-        all_losses.append(np.mean(epoch_loss))
-        if save_params: all_params.append(model._parameters.copy())
-        
-        if verbose: 
-            print(f"Epoch {epoch} Loss: {epoch_loss}")
-
     if save_params: return all_losses, all_params
     return all_losses
