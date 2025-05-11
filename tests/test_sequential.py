@@ -88,8 +88,14 @@ n_epochs = 10
 mse_class = MSELoss()
 all_losses_1 = train_model(X_train, y_train, model_1, loss_class=mse_class, learning_rate = lr, batch_size=batch_size, nb_epochs=n_epochs, seed = seed, verbose = False)
 print(f'Score for model with {n_epochs} training epochs: {score(X_test, y_test, model_1)} ')
+print(f'Params after training model (for {n_epochs} epochs)')
+print("Lin1: ", model_1._parameters[0])
+print("Lin2: ", model_1._parameters[2])
+
+
 n_epochs = 200
 print(f"Params before training model (for {n_epochs} epochs)")
+print(f'Score for model before training : {score(X_test, y_test, model_2)} ')
 print("Lin1: ", model_2._parameters[0])
 print("Lin2: ", model_2._parameters[2])
 all_losses_100 = train_model(X_train, y_train, model_2, loss_class=mse_class, learning_rate = lr, batch_size=batch_size, nb_epochs=n_epochs, seed = seed, verbose = False)
@@ -164,6 +170,11 @@ n_epochs = 10
 all_losses = train(X_train, y_train, batch_size, net, loss_fn = loss, optim = optim, nb_epochs = n_epochs, seed = 10)
 print(f'Score for model with {n_epochs} training epoch: {score_tensor(X_test, y_test, net)} ')
 
+print(f"Params after training model (for {n_epochs} epochs)")
+for o1, o2 in zip(net[0].named_parameters(), net[2].named_parameters()):
+    print("Lin1: ", o1[1])
+    print("Lin2: ", o2[1])
+
 n_epochs = 200
 
 net2 = torch.nn.Sequential(
@@ -180,6 +191,7 @@ with torch.no_grad():
     net2[2].weight.copy_(torch.tensor(W2_np.T, dtype=torch.float64))
     
 
+print(f'Score for model before training : {score_tensor(X_test, y_test, net2)} ')
 print(f"Params before training model (for {n_epochs} epochs)")
 for o1, o2 in zip(net2[0].named_parameters(), net2[2].named_parameters()):
     print("Lin1: ", o1[1])
