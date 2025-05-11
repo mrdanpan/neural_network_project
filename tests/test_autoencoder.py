@@ -196,7 +196,7 @@ plot_autoenc_preds(autoencoder_torch, X_test_torch, nb_epochs=0, is_torch = True
 loss = MSELoss()
 optim = Optim(autoencoder, loss, eps=5e-1)
 n_epochs = 2000
-all_losses, all_params = MBGD(X_train_np, X_train_np, autoencoder, loss, optim, batch_size = 2048, nb_epochs = n_epochs, seed=10, verbose = False, save_params = True)
+all_losses, all_params = SGD(X_train_np, X_train_np, autoencoder, loss, optim, batch_size = 2048, nb_epochs = n_epochs, seed=10, verbose = False, save_params = True)
 # Save parameters
 with open(f'{autoenc_dir}/autoencoder_params_MSE_epoch{len(all_params)-1}.pkl', 'wb') as f:
     pickle.dump(all_params[-1], f)
@@ -209,7 +209,6 @@ plt.ylabel("MSE Loss")
 plt.savefig(f'{autoenc_dir}/losses.png')
 
 plot_autoenc_preds(autoencoder, X_test_np, nb_epochs=n_epochs, is_torch=False)
-
 
 def train_MBGD(model, X_train, loss_fn, optimizer, batch_size=10, nb_epochs=100, seed=10, verbose=True, save_params=False):
 

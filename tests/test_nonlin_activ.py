@@ -253,18 +253,18 @@ if __name__ == "__main__":
     plt.savefig(f'tests/figs/nonlin_{n_epochs}_epochs.png')
     plt.show()
 
-    # # plotting roc curve for test and train
-    # figure, axis = plt.subplots(2, 2, figsize=(10, 10))
+    # plotting roc curve for test and train
+    figure, axis = plt.subplots(2, 2, figsize=(10, 10))
     
-    # i = 0
-    # for m, model in enumerate([model_1, model_2]):
-    #     y_train_hat = model_score(model, X_train)
-    #     RocCurveDisplay.from_predictions(y_train, y_train_hat, ax=axis[i, 0])
-    #     axis[i, 0].set_title(f'Model {m+1} Train ROC curve')
+    i = 0
+    for m, model in enumerate([model_1, model_2]):
+        y_train_hat = model_score(model, X_train)
+        RocCurveDisplay.from_predictions(y_train, y_train_hat, ax=axis[i, 0])
+        axis[i, 0].set_title(f'Model {m+1} Train ROC curve')
 
-    #     y_test_hat = model_score(model, X_test)
-    #     RocCurveDisplay.from_predictions(y_test, y_test, ax=axis[i, 1])
-    #     axis[i, 1].set_title(f'Model {m+1} Test ROC curve')
-    #     i += 1
+        y_test_hat = model_score(model, X_test)
+        RocCurveDisplay.from_predictions(y_test, y_test, ax=axis[i, 1])
+        axis[i, 1].set_title(f'Model {m+1} Test ROC curve')
+        i += 1
 
-    # plt.show()
+    plt.show()

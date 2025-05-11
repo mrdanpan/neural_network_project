@@ -33,10 +33,13 @@ X, Y = zip(*[small_dataset[i] for i in range(len(small_dataset))])
 X_np = np.array([x.numpy().flatten().astype(np.float32) for x in X])  
 y_np = np.array([y for y in Y])
 
-
 train_idx, test_idx = get_split_indices(X, perc_test=0.2, seed=10)
 X_train_np, X_test_np = X_np[train_idx], X_np[test_idx]
-_, y_test_np = y_np[train_idx], y_np[test_idx]
+y_train_np, y_test_np = y_np[train_idx], y_np[test_idx]
+
+print(np.unique_counts(y_train_np))
+print(np.unique_counts(y_train_np)[1]/len(y_train_np))
+exit()
 
 weights_path = 'tests/autoencoder_results/autoencoder_params_MSE_epoch2000.pkl'
 with open(weights_path, 'rb') as f:
@@ -76,11 +79,10 @@ plt.savefig(autoenc_dir + "fashion_items.png")
 autoenc_dir = 'tests/autoencoder_results/'
 latent_preds = encoder.forward(X_test_np)
 label_groups = {
-    "t-shirt": 0, "shirt": 0, "pullover": 0,        # tops
-    "dress": 1, "coat": 1,                          # over-clothing
-    "trouser": 2,                                   # bottoms
-    "sandal": 3, "sneaker": 3, "ankle boot": 3,     # footwear
-    "bag": 4                                        # accessories
+    "t-shirt": 0, "shirt": 0, "pullover": 0, "dress": 0, "coat": 0,          # over-clothing
+    "trouser": 2,                                                            # bottoms
+    "sandal": 3, "sneaker": 3, "ankle boot": 3,                              # footwear
+    "bag": 4                                                                    # accessories
 }
 group_colors = {i: cm.Set2(i / 5) for i in range(5)} 
 
